@@ -140,30 +140,6 @@ class WebRTCService {
       console.log('Received remote stream from peer:', socketId, 'with tracks:', remoteStream.getTracks().map(t => t.kind));
     });
 
-    // Fallback: Sometimes stream event doesn't fire, so also listen to tracks directly
-    const remoteStream = new MediaStream();
-    let streamEmitted = false;
-
-    peer.on('track', (track, stream) => {
-      console.log(`Track event: ${track.kind} track received for ${socketId}`);
-
-      // Add track to our custom stream
-      if (!remoteStream.getTracks().includes(track)) {
-        remoteStream.addTrack(track);
-        console.log(`Added ${track.kind} track to stream. Total tracks:`, remoteStream.getTracks().length);
-      }
-
-      // Emit stream event manually if we have both audio and video (or just one if that's all that's coming)
-      if (!streamEmitted && remoteStream.getTracks().length > 0) {
-        streamEmitted = true;
-        setTimeout(() => {
-          // Give a small delay to collect all tracks
-          console.log(`Manually emitting stream event for ${socketId} with ${remoteStream.getTracks().length} tracks`);
-          peer.emit('stream', remoteStream);
-        }, 100);
-      }
-    });
-
     peer.on('error', (err) => {
       console.error('Peer error for', socketId, ':', err);
       // Don't immediately destroy on error - let ICE retry
@@ -177,6 +153,8 @@ class WebRTCService {
     // Monitor ICE connection state for debugging
     if (peer._pc) {
       const pc = peer._pc;
+      const remoteStream = new MediaStream();
+      let streamEmitted = false;
 
       pc.oniceconnectionstatechange = () => {
         console.log(`[${socketId}] ICE connection state:`, pc.iceConnectionState);
@@ -218,9 +196,25 @@ class WebRTCService {
         console.log(`[${socketId}] Signaling state:`, pc.signalingState);
       };
 
-      // Log track events
+      // CRITICAL FIX: Manually handle tracks and create stream
       pc.ontrack = (event) => {
         console.log(`[${socketId}] Track received:`, event.track.kind, 'streams:', event.streams.length);
+
+        // Add track to our custom stream
+        const track = event.track;
+        if (!remoteStream.getTracks().find(t => t.id === track.id)) {
+          remoteStream.addTrack(track);
+          console.log(`[${socketId}] Added ${track.kind} track. Total tracks:`, remoteStream.getTracks().length);
+        }
+
+        // Emit stream event after collecting tracks (with delay to get both audio and video)
+        if (!streamEmitted && remoteStream.getTracks().length > 0) {
+          streamEmitted = true;
+          setTimeout(() => {
+            console.log(`[${socketId}] Manually emitting stream with ${remoteStream.getTracks().length} tracks`);
+            peer.emit('stream', remoteStream);
+          }, 200); // Small delay to collect all tracks
+        }
       };
     }
 
