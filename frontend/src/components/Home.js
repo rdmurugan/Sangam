@@ -86,15 +86,6 @@ const Home = () => {
 
         <div className="action-section">
           <h3>Create a new meeting</h3>
-          <div className="form-group">
-            <input
-              type="text"
-              placeholder="Meeting name (optional)"
-              value={roomName}
-              onChange={(e) => setRoomName(e.target.value)}
-              className="input-field"
-            />
-          </div>
           <button onClick={createRoom} className="btn btn-primary">
             Create Meeting
           </button>

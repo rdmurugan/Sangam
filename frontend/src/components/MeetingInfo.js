@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const MeetingInfo = ({ roomId, roomName, participantCount }) => {
+const MeetingInfo = ({ roomId, roomName, participantCount, onClose }) => {
   const [copied, setCopied] = useState(false);
 
   const meetingLink = `${window.location.origin}/room/${roomId}`;
@@ -19,6 +19,9 @@ const MeetingInfo = ({ roomId, roomName, participantCount }) => {
     <div className="meeting-info-container">
       <div className="meeting-info-header">
         <h3>Meeting Information</h3>
+        <button className="close-panel-button" onClick={onClose} title="Close">
+          ✕
+        </button>
       </div>
 
       <div className="meeting-info-content">

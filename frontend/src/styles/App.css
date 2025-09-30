@@ -748,6 +748,9 @@ button, input, select, textarea {
   padding: 24px;
   border-bottom: 2px solid rgba(102, 126, 234, 0.1);
   background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .meeting-info-header h3 {
@@ -755,6 +758,31 @@ button, input, select, textarea {
   font-size: 20px;
   font-weight: 700;
   color: #333;
+}
+
+.close-panel-button {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.05);
+  color: #666;
+  font-size: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-panel-button:hover {
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
+  transform: scale(1.1);
+}
+
+.close-panel-button:active {
+  transform: scale(0.95);
 }
 
 .meeting-info-content {

@@ -134,6 +134,14 @@ const Room = () => {
       // Don't emit join-room again - backend handles joining directly
     });
 
+    // Get room info including name
+    socket.on('room-info', (roomInfo) => {
+      console.log('Received room-info:', roomInfo);
+      if (roomInfo.name) {
+        setRoomName(roomInfo.name);
+      }
+    });
+
     socket.on('room-participants', (currentParticipants) => {
       console.log('Received room-participants:', currentParticipants);
 
@@ -462,6 +470,7 @@ const Room = () => {
           roomId={roomId}
           roomName={roomName}
           participantCount={participants.length + 1}
+          onClose={() => setShowMeetingInfo(false)}
         />
       )}
 

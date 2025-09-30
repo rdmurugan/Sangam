@@ -103,7 +103,7 @@ app.post('/api/room/create', roomCreationLimiter, validateRoomName, (req, res) =
     participants: [],
     settings: {
       isLocked: false,
-      waitingRoomEnabled: true,
+      waitingRoomEnabled: false,
       recordingEnabled: false,
       muteOnEntry: false
     },
@@ -181,6 +181,9 @@ io.on('connection', (socket) => {
 
     // Send current participants to new user
     socket.emit('room-participants', room.participants.filter(p => p.socketId !== socket.id));
+
+    // Send room info to user
+    socket.emit('room-info', { name: room.name, id: roomId });
 
     console.log(`${userName} joined room ${roomId}`);
   });
