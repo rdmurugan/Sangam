@@ -31,7 +31,7 @@ const Home = () => {
     }
   };
 
-  const joinRoom = () => {
+  const joinRoom = async () => {
     if (!userName.trim()) {
       alert('Please enter your name');
       return;
@@ -42,9 +42,30 @@ const Home = () => {
       return;
     }
 
-    sessionStorage.setItem('userName', userName);
-    sessionStorage.setItem('isHost', 'false');
-    navigate(`/room/${roomId}`);
+    try {
+      // Validate that the room exists before joining
+      const API_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5001';
+      const response = await fetch(`${API_URL}/api/room/${roomId.trim()}`);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          alert('Room not found. Please check the room ID and try again.');
+        } else {
+          alert('Error validating room. Please try again.');
+        }
+        return;
+      }
+
+      const roomData = await response.json();
+      console.log('Joining room:', roomData);
+
+      sessionStorage.setItem('userName', userName);
+      sessionStorage.setItem('isHost', 'false');
+      navigate(`/room/${roomId.trim()}`);
+    } catch (error) {
+      console.error('Error joining room:', error);
+      alert('Failed to join room. Please check your connection and try again.');
+    }
   };
 
   return (

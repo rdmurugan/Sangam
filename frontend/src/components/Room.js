@@ -91,6 +91,13 @@ const Room = () => {
     socket.on('connect', () => {
       console.log('Socket connected');
       setConnectionQuality('excellent');
+
+      // If this is a reconnection (not initial connect), recreate peer connections
+      if (reconnectAttempts.current > 0) {
+        console.log('Reconnected - recreating peer connections');
+        recreatePeerConnections();
+      }
+
       setIsReconnecting(false);
       reconnectAttempts.current = 0;
     });
@@ -126,10 +133,22 @@ const Room = () => {
 
     socket.on('room-participants', (currentParticipants) => {
       console.log('Received room-participants:', currentParticipants);
-      setParticipants(prev => [...prev, ...currentParticipants]);
+
+      // Prevent duplicates - only add participants not already in state
+      setParticipants(prev => {
+        const existingIds = new Set(prev.map(p => p.socketId));
+        const newParticipants = currentParticipants.filter(p => !existingIds.has(p.socketId));
+        return [...prev, ...newParticipants];
+      });
 
       // Create peer connections for existing participants
       currentParticipants.forEach(participant => {
+        // Skip if peer already exists
+        if (peersRef.current.has(participant.socketId)) {
+          console.log('Peer already exists for:', participant.socketId);
+          return;
+        }
+
         console.log('Creating peer for existing participant:', participant.socketId);
         const peer = webrtcService.createPeer(participant.socketId, true, stream);
 
@@ -142,12 +161,29 @@ const Room = () => {
           peersRef.current.set(participant.socketId, peerData);
           setPeers(new Map(peersRef.current));
         });
+
+        peer.on('error', (err) => {
+          console.error('Peer error for existing participant:', participant.socketId, err);
+          // Clean up broken peer
+          webrtcService.removePeer(participant.socketId);
+          peersRef.current.delete(participant.socketId);
+          setPeers(new Map(peersRef.current));
+        });
       });
     });
 
     socket.on('user-joined', (participant) => {
       console.log('User joined:', participant);
-      setParticipants(prev => [...prev, participant]);
+
+      // Prevent duplicates
+      setParticipants(prev => {
+        const exists = prev.some(p => p.socketId === participant.socketId);
+        if (exists) {
+          console.log('Participant already exists:', participant.socketId);
+          return prev;
+        }
+        return [...prev, participant];
+      });
 
       // Don't create peer here - the new user will initiate the connection
       // We'll receive an 'offer' event and respond to it
@@ -156,15 +192,34 @@ const Room = () => {
 
     socket.on('offer', ({ from, offer }) => {
       console.log('Received offer from:', from);
+
+      // Skip if peer already exists
+      if (peersRef.current.has(from)) {
+        console.log('Peer already exists for offer from:', from);
+        return;
+      }
+
       const peer = webrtcService.addPeer(from, offer, stream);
 
+      // Get userName from participants list
+      const participant = participants.find(p => p.socketId === from);
+      const userName = participant ? participant.userName : 'Participant';
+
       // Add peer to ref immediately so it can receive ice-candidates
-      peersRef.current.set(from, { peer, stream: null, userName: 'Participant' });
+      peersRef.current.set(from, { peer, stream: null, userName });
 
       peer.on('stream', (remoteStream) => {
         console.log('Received remote stream from:', from);
-        const peerData = { peer, stream: remoteStream, userName: 'Participant' };
+        const peerData = { peer, stream: remoteStream, userName };
         peersRef.current.set(from, peerData);
+        setPeers(new Map(peersRef.current));
+      });
+
+      peer.on('error', (err) => {
+        console.error('Peer error for new user:', from, err);
+        // Clean up broken peer
+        webrtcService.removePeer(from);
+        peersRef.current.delete(from);
         setPeers(new Map(peersRef.current));
       });
     });
@@ -173,7 +228,15 @@ const Room = () => {
       console.log('Received answer from:', from);
       const peerData = peersRef.current.get(from);
       if (peerData && !peerData.peer.destroyed) {
-        peerData.peer.signal(answer);
+        try {
+          peerData.peer.signal(answer);
+        } catch (error) {
+          console.error('Error signaling answer to peer:', from, error);
+          // Clean up broken peer
+          webrtcService.removePeer(from);
+          peersRef.current.delete(from);
+          setPeers(new Map(peersRef.current));
+        }
       } else {
         console.error('No peer found for answer from:', from, 'or peer is destroyed');
       }
@@ -183,7 +246,12 @@ const Room = () => {
       console.log('Received ICE candidate from:', from);
       const peerData = peersRef.current.get(from);
       if (peerData && !peerData.peer.destroyed) {
-        peerData.peer.signal(candidate);
+        try {
+          peerData.peer.signal(candidate);
+        } catch (error) {
+          console.error('Error signaling ICE candidate to peer:', from, error);
+          // Don't clean up on ICE candidate errors - they can be non-fatal
+        }
       } else {
         console.error('No peer found for ICE candidate from:', from, 'or peer is destroyed');
       }
@@ -299,6 +367,29 @@ const Room = () => {
 
   const handleRejectUser = (socketId) => {
     socketRef.current.emit('reject-user', { roomId, socketId });
+  };
+
+  const recreatePeerConnections = async () => {
+    console.log('Recreating peer connections after reconnection...');
+
+    if (!localStream) {
+      console.error('No local stream available for reconnection');
+      return;
+    }
+
+    // Clean up all existing peer connections
+    peersRef.current.forEach((peerData, socketId) => {
+      webrtcService.removePeer(socketId);
+    });
+    peersRef.current.clear();
+    setPeers(new Map());
+
+    // Wait a bit for socket to stabilize
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Rejoin the room
+    console.log('Rejoining room after reconnection');
+    socketRef.current.emit('join-room', { roomId, userName, isHost });
   };
 
   const attemptReconnection = () => {

@@ -107,6 +107,15 @@ io.on('connection', (socket) => {
       return;
     }
 
+    // Check if user is already in the room (reconnection scenario)
+    const existingParticipant = room.participants.find(p => p.socketId === socket.id);
+    if (existingParticipant) {
+      console.log(`${userName} already in room ${roomId}, sending current participants`);
+      // Just send current participants, don't notify others
+      socket.emit('room-participants', room.participants.filter(p => p.socketId !== socket.id));
+      return;
+    }
+
     // Waiting room logic
     if (room.settings.waitingRoomEnabled && !isHost) {
       const waitingRoom = waitingRooms.get(roomId) || [];

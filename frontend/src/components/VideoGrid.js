@@ -5,6 +5,23 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
 
   useEffect(() => {
     if (videoRef.current && stream) {
+      // Validate stream has active tracks
+      const videoTracks = stream.getVideoTracks();
+      const audioTracks = stream.getAudioTracks();
+
+      if (videoTracks.length === 0 && audioTracks.length === 0) {
+        console.error('Stream has no tracks for:', userName);
+        return;
+      }
+
+      // Check if tracks are active
+      const hasActiveTracks = [...videoTracks, ...audioTracks].some(track => track.readyState === 'live');
+      if (!hasActiveTracks) {
+        console.error('Stream has no active tracks for:', userName);
+        return;
+      }
+
+      console.log('Setting stream for:', userName, 'Video tracks:', videoTracks.length, 'Audio tracks:', audioTracks.length);
       videoRef.current.srcObject = stream;
 
       // Important for mobile: ensure video plays
@@ -25,6 +42,13 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
           });
       }
     }
+
+    // Cleanup on unmount
+    return () => {
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+    };
   }, [stream, userName, muted]);
 
   return (
