@@ -61,9 +61,39 @@ app.use('/api/auth', authRoutes);
 const rooms = new Map();
 const waitingRooms = new Map();
 
+// Generate simple room ID in format xxx-xxx-xxxx
+function generateRoomId() {
+  const digits = '0123456789';
+  let roomId = '';
+
+  // Generate 3 digits
+  for (let i = 0; i < 3; i++) {
+    roomId += digits[Math.floor(Math.random() * digits.length)];
+  }
+  roomId += '-';
+
+  // Generate 3 digits
+  for (let i = 0; i < 3; i++) {
+    roomId += digits[Math.floor(Math.random() * digits.length)];
+  }
+  roomId += '-';
+
+  // Generate 4 digits
+  for (let i = 0; i < 4; i++) {
+    roomId += digits[Math.floor(Math.random() * digits.length)];
+  }
+
+  // Check if room ID already exists (very rare collision)
+  if (rooms.has(roomId)) {
+    return generateRoomId(); // Recursively generate new one
+  }
+
+  return roomId;
+}
+
 // Room management
 app.post('/api/room/create', roomCreationLimiter, validateRoomName, (req, res) => {
-  const roomId = uuidv4();
+  const roomId = generateRoomId();
   const { hostName, roomName } = req.body;
 
   rooms.set(roomId, {
