@@ -6,8 +6,26 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream;
+
+      // Important for mobile: ensure video plays
+      const playPromise = videoRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log('Video playing successfully for:', userName);
+          })
+          .catch(error => {
+            console.error('Error playing video for', userName, ':', error);
+            // Try again after user interaction on mobile
+            if (!muted) {
+              setTimeout(() => {
+                videoRef.current?.play().catch(e => console.error('Retry failed:', e));
+              }, 1000);
+            }
+          });
+      }
     }
-  }, [stream]);
+  }, [stream, userName, muted]);
 
   return (
     <div className="video-container">
@@ -17,6 +35,7 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         playsInline
         muted={muted}
         className={`video-player ${isLocal ? 'local-video' : ''}`}
+        webkit-playsinline="true"
       />
       <div className="video-label">{userName}</div>
     </div>
