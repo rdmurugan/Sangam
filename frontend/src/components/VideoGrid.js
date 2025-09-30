@@ -71,7 +71,13 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
 
 const VideoGrid = ({ localStream, peers, localUserName }) => {
   console.log('VideoGrid rendering - peers count:', peers.size);
-  console.log('VideoGrid peers:', Array.from(peers.entries()));
+  console.log('VideoGrid peers:', Array.from(peers.entries()).map(([id, data]) => ({
+    id,
+    userName: data.userName,
+    hasStream: !!data.stream,
+    streamId: data.stream?.id,
+    trackCount: data.stream?.getTracks().length
+  })));
 
   return (
     <div className="video-grid">
@@ -84,9 +90,15 @@ const VideoGrid = ({ localStream, peers, localUserName }) => {
         />
       )}
       {Array.from(peers.entries())
-        .filter(([socketId, peerData]) => peerData.stream !== null)
+        .filter(([socketId, peerData]) => {
+          if (!peerData.stream) {
+            console.log(`Filtering out peer ${socketId} - no stream yet`);
+            return false;
+          }
+          return true;
+        })
         .map(([socketId, peerData]) => {
-          console.log('Rendering peer with stream:', socketId, peerData);
+          console.log('Rendering peer video:', socketId, 'stream:', peerData.stream.id, 'tracks:', peerData.stream.getTracks().length);
           return (
             <VideoPlayer
               key={socketId}

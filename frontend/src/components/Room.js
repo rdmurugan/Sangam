@@ -167,9 +167,14 @@ const Room = () => {
         peersRef.current.set(participant.socketId, { peer, stream: null, userName: participant.userName });
 
         peer.on('stream', (remoteStream) => {
-          console.log('Received stream from existing participant:', participant.socketId);
+          console.log('✅ Received stream from existing participant:', participant.socketId);
+          console.log('Stream details:', {
+            streamId: remoteStream.id,
+            tracks: remoteStream.getTracks().map(t => ({kind: t.kind, enabled: t.enabled, readyState: t.readyState}))
+          });
           const peerData = { peer, stream: remoteStream, userName: participant.userName };
           peersRef.current.set(participant.socketId, peerData);
+          console.log('📺 Updating peers state with stream for:', participant.socketId);
           setPeers(new Map(peersRef.current));
         });
 
@@ -220,9 +225,15 @@ const Room = () => {
       peersRef.current.set(from, { peer, stream: null, userName });
 
       peer.on('stream', (remoteStream) => {
-        console.log('Received remote stream from:', from);
+        console.log('✅ Received remote stream from:', from);
+        console.log('Stream details:', {
+          streamId: remoteStream.id,
+          tracks: remoteStream.getTracks().map(t => ({kind: t.kind, enabled: t.enabled, readyState: t.readyState}))
+        });
         const peerData = { peer, stream: remoteStream, userName };
         peersRef.current.set(from, peerData);
+        console.log('📺 Updating peers state with stream for:', from);
+        console.log('Current peers map size:', peersRef.current.size);
         setPeers(new Map(peersRef.current));
       });
 
