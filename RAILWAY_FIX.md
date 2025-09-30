@@ -13,19 +13,26 @@ Railway is having issues with our dependencies. **Use Render.com** (same free ti
 
 ---
 
-## Solution 1: Use Root Directory Setting (EASIEST)
+## Solution 1: Configure Root Directory (CRITICAL!)
 
-### Steps:
-1. Deploy your app to Railway normally
-2. Click on your service
-3. Go to **Settings** tab
-4. Scroll to **Service Settings**
-5. Find **Root Directory**
-6. Enter: `backend`
-7. Click save (checkmark)
-8. Railway will redeploy automatically
+Railway MUST know to use the `backend` folder. Here's how:
 
-**This is the recommended approach!**
+### Method A: Before Deploying
+1. In Railway, click **"Deploy from GitHub repo"**
+2. Select **"rdmurugan/Sangam"**
+3. **BEFORE clicking deploy**, click **"Add variables"**
+4. After adding env vars, click **"Deploy"**
+5. **IMMEDIATELY** go to **Settings** tab
+6. Find **Root Directory** → Enter: `backend`
+7. Save (checkmark)
+
+### Method B: After Deploying
+1. Your service → **Settings** tab
+2. Find **Root Directory**
+3. Enter: `backend`
+4. Save - Railway will redeploy
+
+**CRITICAL:** Without setting Root Directory to `backend`, Railway will fail!
 
 ---
 
