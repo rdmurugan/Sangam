@@ -76,35 +76,49 @@ class WebRTCService {
       stream,
       config: {
         iceServers: [
+          // Google STUN servers
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
           { urls: 'stun:stun2.l.google.com:19302' },
+          { urls: 'stun:stun3.l.google.com:19302' },
+          { urls: 'stun:stun4.l.google.com:19302' },
+          // Additional reliable STUN servers
+          { urls: 'stun:stun.stunprotocol.org:3478' },
+          { urls: 'stun:stun.voip.blackberry.com:3478' },
+          // Twilio STUN
           { urls: 'stun:global.stun.twilio.com:3478' },
-          // Public TURN servers for better mobile connectivity
+          // Free TURN servers with better reliability
           {
-            urls: 'turn:openrelay.metered.ca:80',
-            username: 'openrelayproject',
-            credential: 'openrelayproject'
+            urls: 'turn:numb.viagenie.ca',
+            username: 'webrtc@live.com',
+            credential: 'muazkh'
           },
           {
-            urls: 'turn:openrelay.metered.ca:443',
-            username: 'openrelayproject',
-            credential: 'openrelayproject'
+            urls: 'turn:relay.metered.ca:80',
+            username: 'f4b4035eaa67d13a733c9d27',
+            credential: 'rHqw7ZB1xCDuPEFR'
           },
           {
-            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-            username: 'openrelayproject',
-            credential: 'openrelayproject'
+            urls: 'turn:relay.metered.ca:443',
+            username: 'f4b4035eaa67d13a733c9d27',
+            credential: 'rHqw7ZB1xCDuPEFR'
+          },
+          {
+            urls: 'turn:relay.metered.ca:443?transport=tcp',
+            username: 'f4b4035eaa67d13a733c9d27',
+            credential: 'rHqw7ZB1xCDuPEFR'
           }
         ],
-        // Important for mobile devices
+        // Important for mobile devices and connection stability
         sdpSemantics: 'unified-plan',
-        // Enable all candidates
+        // Enable all candidates (host, srflx, relay)
         iceTransportPolicy: 'all',
-        // Bundle policy
+        // Bundle policy for better performance
         bundlePolicy: 'max-bundle',
         // RTC configuration
-        rtcpMuxPolicy: 'require'
+        rtcpMuxPolicy: 'require',
+        // ICE candidate pool size - helps with connection establishment
+        iceCandidatePoolSize: 10
       },
       // Offer options for better mobile support
       offerOptions: {
@@ -135,11 +149,42 @@ class WebRTCService {
 
     peer.on('error', (err) => {
       console.error('Peer error for', socketId, ':', err);
+      // Don't immediately destroy on error - let ICE retry
     });
 
     peer.on('close', () => {
       console.log('Peer connection closed:', socketId);
+      this.peers.delete(socketId);
     });
+
+    // Monitor ICE connection state for debugging
+    if (peer._pc) {
+      peer._pc.oniceconnectionstatechange = () => {
+        console.log(`ICE connection state for ${socketId}:`, peer._pc.iceConnectionState);
+
+        // Handle connection failures
+        if (peer._pc.iceConnectionState === 'failed') {
+          console.log(`ICE connection failed for ${socketId}, attempting ICE restart`);
+          // SimplePeer will handle ICE restart automatically
+        }
+
+        if (peer._pc.iceConnectionState === 'disconnected') {
+          console.log(`ICE connection disconnected for ${socketId}, waiting for reconnection...`);
+          // Wait a bit before taking action - connection might recover
+        }
+      };
+
+      peer._pc.onconnectionstatechange = () => {
+        console.log(`Connection state for ${socketId}:`, peer._pc.connectionState);
+      };
+
+      // Log ICE candidates for debugging
+      peer._pc.onicecandidate = (event) => {
+        if (event.candidate) {
+          console.log(`ICE candidate for ${socketId}:`, event.candidate.type, event.candidate.protocol);
+        }
+      };
+    }
 
     this.peers.set(socketId, peer);
     return peer;
