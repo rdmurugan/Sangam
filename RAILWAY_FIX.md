@@ -1,8 +1,15 @@
 # 🔧 Railway Deployment Fix
 
-## Problem: "Railpack could not determine how to build the app"
+## Problem: "Railpack could not determine how to build the app" or "Error creating build plan"
 
-Railway can't auto-detect monorepo structure. Here's how to fix it:
+Railway has issues with:
+1. Monorepo structure (backend + frontend)
+2. Native dependencies (bcrypt requires Python/GCC)
+3. Complex package structures
+
+## BEST SOLUTION: Use Render.com or Heroku Instead
+
+Railway is having issues with our dependencies. **Use Render.com** (same free tier, better support):
 
 ---
 
@@ -166,9 +173,9 @@ Health Check: /api/room/create (GET)
 
 ---
 
-## Alternative: Render.com Deployment
+## ⭐ RECOMMENDED: Render.com Deployment (EASIEST)
 
-If Railway continues to have issues, try Render.com:
+Render.com handles monorepos and native dependencies better than Railway:
 
 ### Steps:
 1. Go to https://render.com
