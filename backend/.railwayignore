@@ -1,0 +1,16 @@
+# Ignore frontend files
+../frontend/
+../docs/
+../.git/
+
+# Ignore documentation
+../*.md
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment
+.env.local
+.env.*.local
