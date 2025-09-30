@@ -79,34 +79,27 @@ class WebRTCService {
           // Google STUN servers
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: 'stun:stun2.l.google.com:19302' },
-          { urls: 'stun:stun3.l.google.com:19302' },
-          { urls: 'stun:stun4.l.google.com:19302' },
-          // Additional reliable STUN servers
-          { urls: 'stun:stun.stunprotocol.org:3478' },
-          { urls: 'stun:stun.voip.blackberry.com:3478' },
-          // Twilio STUN
-          { urls: 'stun:global.stun.twilio.com:3478' },
-          // Free TURN servers with better reliability
+          // Free TURN servers - multiple providers for reliability
+          {
+            urls: 'turn:openrelay.metered.ca:80',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+          },
+          {
+            urls: 'turn:openrelay.metered.ca:443',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+          },
+          {
+            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
+            username: 'openrelayproject',
+            credential: 'openrelayproject'
+          },
+          // Backup TURN server
           {
             urls: 'turn:numb.viagenie.ca',
             username: 'webrtc@live.com',
             credential: 'muazkh'
-          },
-          {
-            urls: 'turn:relay.metered.ca:80',
-            username: 'f4b4035eaa67d13a733c9d27',
-            credential: 'rHqw7ZB1xCDuPEFR'
-          },
-          {
-            urls: 'turn:relay.metered.ca:443',
-            username: 'f4b4035eaa67d13a733c9d27',
-            credential: 'rHqw7ZB1xCDuPEFR'
-          },
-          {
-            urls: 'turn:relay.metered.ca:443?transport=tcp',
-            username: 'f4b4035eaa67d13a733c9d27',
-            credential: 'rHqw7ZB1xCDuPEFR'
           }
         ],
         // Important for mobile devices and connection stability
@@ -159,30 +152,51 @@ class WebRTCService {
 
     // Monitor ICE connection state for debugging
     if (peer._pc) {
-      peer._pc.oniceconnectionstatechange = () => {
-        console.log(`ICE connection state for ${socketId}:`, peer._pc.iceConnectionState);
+      const pc = peer._pc;
 
-        // Handle connection failures
-        if (peer._pc.iceConnectionState === 'failed') {
-          console.log(`ICE connection failed for ${socketId}, attempting ICE restart`);
-          // SimplePeer will handle ICE restart automatically
+      pc.oniceconnectionstatechange = () => {
+        console.log(`[${socketId}] ICE connection state:`, pc.iceConnectionState);
+
+        if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
+          console.log(`[${socketId}] ✅ ICE CONNECTION ESTABLISHED`);
         }
 
-        if (peer._pc.iceConnectionState === 'disconnected') {
-          console.log(`ICE connection disconnected for ${socketId}, waiting for reconnection...`);
-          // Wait a bit before taking action - connection might recover
+        if (pc.iceConnectionState === 'failed') {
+          console.log(`[${socketId}] ❌ ICE connection FAILED`);
+        }
+
+        if (pc.iceConnectionState === 'disconnected') {
+          console.log(`[${socketId}] ⚠️ ICE connection DISCONNECTED`);
         }
       };
 
-      peer._pc.onconnectionstatechange = () => {
-        console.log(`Connection state for ${socketId}:`, peer._pc.connectionState);
+      pc.onconnectionstatechange = () => {
+        console.log(`[${socketId}] Connection state:`, pc.connectionState);
       };
 
-      // Log ICE candidates for debugging
-      peer._pc.onicecandidate = (event) => {
+      // Log ALL ICE candidates with details
+      pc.onicecandidate = (event) => {
         if (event.candidate) {
-          console.log(`ICE candidate for ${socketId}:`, event.candidate.type, event.candidate.protocol);
+          const c = event.candidate;
+          console.log(`[${socketId}] ICE candidate:`, {
+            type: c.type,
+            protocol: c.protocol,
+            address: c.address || c.ip,
+            port: c.port
+          });
+        } else {
+          console.log(`[${socketId}] ICE gathering completed`);
         }
+      };
+
+      // Monitor signaling state
+      pc.onsignalingstatechange = () => {
+        console.log(`[${socketId}] Signaling state:`, pc.signalingState);
+      };
+
+      // Log track events
+      pc.ontrack = (event) => {
+        console.log(`[${socketId}] Track received:`, event.track.kind, 'streams:', event.streams.length);
       };
     }
 
