@@ -136,8 +136,12 @@ class WebRTCService {
       console.log('Peer connected successfully:', socketId);
     });
 
+    // Track if SimplePeer already emitted the stream
+    let simplePeerStreamReceived = false;
+
     peer.on('stream', (remoteStream) => {
-      console.log('Received remote stream from peer:', socketId, 'with tracks:', remoteStream.getTracks().map(t => t.kind));
+      simplePeerStreamReceived = true;
+      console.log('✅ SimplePeer stream event fired for:', socketId, 'with tracks:', remoteStream.getTracks().map(t => t.kind));
     });
 
     peer.on('error', (err) => {
@@ -217,13 +221,18 @@ class WebRTCService {
           console.log(`[${socketId}] Added ${track.kind} track. Total tracks:`, remoteStream.getTracks().length);
         }
 
-        // Emit stream event after collecting tracks (with delay to get both audio and video)
-        if (!streamEmitted && remoteStream.getTracks().length > 0) {
+        // Only emit stream manually if SimplePeer hasn't already done it
+        if (!streamEmitted && !simplePeerStreamReceived && remoteStream.getTracks().length > 0) {
           streamEmitted = true;
           setTimeout(() => {
-            console.log(`[${socketId}] Manually emitting stream with ${remoteStream.getTracks().length} tracks`);
-            peer.emit('stream', remoteStream);
-          }, 200); // Small delay to collect all tracks
+            // Double-check SimplePeer didn't emit during the delay
+            if (!simplePeerStreamReceived) {
+              console.log(`[${socketId}] ⚠️ SimplePeer didn't emit stream, manually emitting with ${remoteStream.getTracks().length} tracks`);
+              peer.emit('stream', remoteStream);
+            } else {
+              console.log(`[${socketId}] ✅ SimplePeer already emitted stream, skipping manual emit`);
+            }
+          }, 300); // Small delay to collect all tracks and let SimplePeer emit first
         }
       };
     }
