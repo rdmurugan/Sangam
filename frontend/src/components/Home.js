@@ -14,7 +14,8 @@ const Home = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5001/api/room/create', {
+      const API_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5001';
+      const response = await fetch(`${API_URL}/api/room/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ hostName: userName, roomName })
