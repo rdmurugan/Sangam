@@ -8,6 +8,7 @@ const Controls = ({
   onToggleChat,
   onToggleParticipants,
   onToggleWaitingRoom,
+  onToggleMeetingInfo,
   isScreenSharing,
   isHost,
   waitingCount = 0
@@ -68,6 +69,14 @@ const Controls = ({
           title="Participants"
         >
           👥
+        </button>
+
+        <button
+          className="control-button"
+          onClick={onToggleMeetingInfo}
+          title="Meeting Info"
+        >
+          ℹ️
         </button>
 
         {isHost && (

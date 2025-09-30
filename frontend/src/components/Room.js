@@ -10,6 +10,7 @@ import WaitingRoom from './WaitingRoom';
 import WaitingRoomPanel from './WaitingRoomPanel';
 import RecordingIndicator from './RecordingIndicator';
 import ConnectionIndicator from './ConnectionIndicator';
+import MeetingInfo from './MeetingInfo';
 
 const Room = () => {
   const { roomId } = useParams();
@@ -22,7 +23,9 @@ const Room = () => {
   const [showChat, setShowChat] = useState(false);
   const [showParticipants, setShowParticipants] = useState(false);
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
+  const [showMeetingInfo, setShowMeetingInfo] = useState(false);
   const [waitingUsers, setWaitingUsers] = useState([]);
+  const [roomName, setRoomName] = useState('Sangam Meeting');
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isInWaitingRoom, setIsInWaitingRoom] = useState(false);
@@ -454,6 +457,14 @@ const Room = () => {
         />
       )}
 
+      {showMeetingInfo && (
+        <MeetingInfo
+          roomId={roomId}
+          roomName={roomName}
+          participantCount={participants.length + 1}
+        />
+      )}
+
       {showWaitingRoom && isHost && (
         <WaitingRoomPanel
           waitingUsers={waitingUsers}
@@ -469,6 +480,7 @@ const Room = () => {
         onLeave={leaveRoom}
         onToggleChat={() => setShowChat(!showChat)}
         onToggleParticipants={() => setShowParticipants(!showParticipants)}
+        onToggleMeetingInfo={() => setShowMeetingInfo(!showMeetingInfo)}
         onToggleWaitingRoom={() => setShowWaitingRoom(!showWaitingRoom)}
         isScreenSharing={isScreenSharing}
         isHost={isHost}
