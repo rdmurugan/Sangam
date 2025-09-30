@@ -140,7 +140,6 @@ io.on('connection', (socket) => {
     // Check if user is already in the room (reconnection scenario)
     const existingParticipant = room.participants.find(p => p.socketId === socket.id);
     if (existingParticipant) {
-      console.log(`${userName} already in room ${roomId}, sending current participants`);
       // Just send current participants, don't notify others
       socket.emit('room-participants', room.participants.filter(p => p.socketId !== socket.id));
       return;
@@ -176,7 +175,6 @@ io.on('connection', (socket) => {
     room.participants.push(participant);
 
     // Notify other participants
-    console.log(`Notifying room ${roomId} about new participant ${participant.userName}`);
     socket.to(roomId).emit('user-joined', participant);
 
     // Send current participants to new user
@@ -184,8 +182,6 @@ io.on('connection', (socket) => {
 
     // Send room info to user
     socket.emit('room-info', { name: room.name, id: roomId });
-
-    console.log(`${userName} joined room ${roomId}`);
   });
 
   // Admit user from waiting room
@@ -229,8 +225,6 @@ io.on('connection', (socket) => {
 
         // Notify host that user was admitted
         io.to(roomId).emit('user-admitted', { socketId });
-
-        console.log(`${user.userName} admitted to room ${roomId}`);
       }
     }
   });

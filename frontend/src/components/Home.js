@@ -3,31 +3,59 @@ import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [userName, setUserName] = useState('');
-  const [roomName, setRoomName] = useState('');
   const [roomId, setRoomId] = useState('');
+  const [nameError, setNameError] = useState('');
   const navigate = useNavigate();
 
+  const validateName = (name) => {
+    if (!name.trim()) {
+      setNameError('Please enter your name');
+      return false;
+    }
+    if (name.trim().length < 2) {
+      setNameError('Name must be at least 2 characters');
+      return false;
+    }
+    if (name.trim().length > 50) {
+      setNameError('Name must be less than 50 characters');
+      return false;
+    }
+    setNameError('');
+    return true;
+  };
+
   const createRoom = async () => {
-    if (!userName.trim()) {
-      alert('Please enter your name');
+    if (!validateName(userName)) {
       return;
     }
 
-    try {
+    try{
       const API_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5001';
+
       const response = await fetch(`${API_URL}/api/room/create`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hostName: userName, roomName })
+        body: JSON.stringify({ hostName: userName })
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
+
+      if (data.errors) {
+        const errorMessages = data.errors.map(e => e.msg).join('\n');
+        alert(`Validation error:\n${errorMessages}`);
+        return;
+      }
+
       sessionStorage.setItem('userName', userName);
       sessionStorage.setItem('isHost', 'true');
       navigate(`/room/${data.roomId}`);
     } catch (error) {
       console.error('Error creating room:', error);
-      alert('Failed to create room');
+      alert(`Failed to create room: ${error.message}`);
     }
   };
 
@@ -57,7 +85,6 @@ const Home = () => {
       }
 
       const roomData = await response.json();
-      console.log('Joining room:', roomData);
 
       sessionStorage.setItem('userName', userName);
       sessionStorage.setItem('isHost', 'false');
@@ -79,9 +106,14 @@ const Home = () => {
             type="text"
             placeholder="Enter your name"
             value={userName}
-            onChange={(e) => setUserName(e.target.value)}
-            className="input-field"
+            onChange={(e) => {
+              setUserName(e.target.value);
+              if (e.target.value) validateName(e.target.value);
+            }}
+            onBlur={() => validateName(userName)}
+            className={`input-field ${nameError ? 'error' : ''}`}
           />
+          {nameError && <div className="error-message">{nameError}</div>}
         </div>
 
         <div className="action-section">
