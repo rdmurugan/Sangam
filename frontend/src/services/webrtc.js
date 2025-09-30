@@ -141,12 +141,14 @@ class WebRTCService {
     });
 
     peer.on('error', (err) => {
-      console.error('Peer error for', socketId, ':', err);
+      console.error('❌ Peer error for', socketId, ':', err);
+      console.error('Error details:', err.message, err.code);
       // Don't immediately destroy on error - let ICE retry
     });
 
     peer.on('close', () => {
-      console.log('Peer connection closed:', socketId);
+      console.log('⚠️ Peer connection closed:', socketId);
+      console.trace('Close event stack trace');
       this.peers.delete(socketId);
     });
 
@@ -196,9 +198,17 @@ class WebRTCService {
         console.log(`[${socketId}] Signaling state:`, pc.signalingState);
       };
 
-      // CRITICAL FIX: Manually handle tracks and create stream
+      // CRITICAL FIX: Hook into ontrack to manually emit stream
+      // Save SimplePeer's original ontrack handler
+      const originalOnTrack = pc.ontrack;
+
       pc.ontrack = (event) => {
         console.log(`[${socketId}] Track received:`, event.track.kind, 'streams:', event.streams.length);
+
+        // Call SimplePeer's original handler first
+        if (originalOnTrack) {
+          originalOnTrack.call(pc, event);
+        }
 
         // Add track to our custom stream
         const track = event.track;
