@@ -60,6 +60,9 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         muted={muted}
         className={`video-player ${isLocal ? 'local-video' : ''}`}
         webkit-playsinline="true"
+        controls={false}
+        preload="auto"
+        style={{ objectFit: 'cover' }}
       />
       <div className="video-label">{userName}</div>
     </div>

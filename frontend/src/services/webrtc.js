@@ -14,7 +14,30 @@ class WebRTCService {
 
   async getUserMedia(constraints = { video: true, audio: true }) {
     try {
-      this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
+      // Mobile-optimized constraints
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+      const enhancedConstraints = {
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        },
+        video: isMobile ? {
+          width: { ideal: 640, max: 1280 },
+          height: { ideal: 480, max: 720 },
+          frameRate: { ideal: 15, max: 30 },
+          facingMode: 'user'
+        } : {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          frameRate: { ideal: 30 }
+        }
+      };
+
+      console.log('Requesting media with constraints:', enhancedConstraints);
+      this.localStream = await navigator.mediaDevices.getUserMedia(enhancedConstraints);
+      console.log('Local stream obtained:', this.localStream.getTracks().map(t => `${t.kind}: ${t.label}`));
       return this.localStream;
     } catch (error) {
       console.error('Error accessing media devices:', error);
@@ -45,6 +68,8 @@ class WebRTCService {
   }
 
   createPeer(socketId, initiator, stream) {
+    console.log('Creating peer for:', socketId, 'Initiator:', initiator, 'Stream tracks:', stream?.getTracks().map(t => t.kind));
+
     const peer = new SimplePeer({
       initiator,
       trickle: true,
@@ -73,7 +98,18 @@ class WebRTCService {
           }
         ],
         // Important for mobile devices
-        sdpSemantics: 'unified-plan'
+        sdpSemantics: 'unified-plan',
+        // Enable all candidates
+        iceTransportPolicy: 'all',
+        // Bundle policy
+        bundlePolicy: 'max-bundle',
+        // RTC configuration
+        rtcpMuxPolicy: 'require'
+      },
+      // Offer options for better mobile support
+      offerOptions: {
+        offerToReceiveAudio: true,
+        offerToReceiveVideo: true
       }
     });
 
