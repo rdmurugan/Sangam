@@ -132,6 +132,7 @@ io.on('connection', (socket) => {
     room.participants.push(participant);
 
     // Notify other participants
+    console.log(`Notifying room ${roomId} about new participant ${participant.userName}`);
     socket.to(roomId).emit('user-joined', participant);
 
     // Send current participants to new user
@@ -151,6 +152,21 @@ io.on('connection', (socket) => {
       waitingRooms.set(roomId, waitingRoom);
 
       io.to(socketId).emit('admitted-to-room', { roomId });
+      io.to(roomId).emit('user-admitted', { socketId });
+    }
+  });
+
+  // Reject user from waiting room
+  socket.on('reject-user', ({ roomId, socketId }) => {
+    const waitingRoom = waitingRooms.get(roomId) || [];
+    const userIndex = waitingRoom.findIndex(u => u.socketId === socketId);
+
+    if (userIndex !== -1) {
+      waitingRoom.splice(userIndex, 1);
+      waitingRooms.set(roomId, waitingRoom);
+
+      io.to(socketId).emit('rejected-from-room');
+      io.to(roomId).emit('user-rejected', { socketId });
     }
   });
 

@@ -7,8 +7,10 @@ const Controls = ({
   onLeave,
   onToggleChat,
   onToggleParticipants,
+  onToggleWaitingRoom,
   isScreenSharing,
-  isHost
+  isHost,
+  waitingCount = 0
 }) => {
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
@@ -67,6 +69,17 @@ const Controls = ({
         >
           👥
         </button>
+
+        {isHost && (
+          <button
+            className={`control-button ${waitingCount > 0 ? 'notification' : ''}`}
+            onClick={onToggleWaitingRoom}
+            title="Waiting Room"
+          >
+            🚪
+            {waitingCount > 0 && <span className="badge">{waitingCount}</span>}
+          </button>
+        )}
 
         <button
           className="control-button leave-button"
