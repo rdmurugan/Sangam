@@ -83,13 +83,16 @@ const Room = () => {
     });
 
     socket.on('user-joined', (participant) => {
+      console.log('User joined:', participant);
       setParticipants(prev => [...prev, participant]);
     });
 
     socket.on('offer', ({ from, offer }) => {
+      console.log('Received offer from:', from);
       const peer = webrtcService.addPeer(from, offer, stream);
 
       peer.on('stream', (remoteStream) => {
+        console.log('Received remote stream from:', from);
         setPeers(prev => new Map(prev).set(from, {
           peer,
           stream: remoteStream,
@@ -99,17 +102,29 @@ const Room = () => {
     });
 
     socket.on('answer', ({ from, answer }) => {
-      const peerData = peers.get(from);
-      if (peerData) {
-        peerData.peer.signal(answer);
-      }
+      console.log('Received answer from:', from);
+      setPeers(prev => {
+        const peerData = prev.get(from);
+        if (peerData) {
+          peerData.peer.signal(answer);
+        } else {
+          console.error('No peer found for answer from:', from);
+        }
+        return prev;
+      });
     });
 
     socket.on('ice-candidate', ({ from, candidate }) => {
-      const peerData = peers.get(from);
-      if (peerData) {
-        peerData.peer.signal(candidate);
-      }
+      console.log('Received ICE candidate from:', from);
+      setPeers(prev => {
+        const peerData = prev.get(from);
+        if (peerData) {
+          peerData.peer.signal(candidate);
+        } else {
+          console.error('No peer found for ICE candidate from:', from);
+        }
+        return prev;
+      });
     });
 
     socket.on('user-left', ({ socketId }) => {

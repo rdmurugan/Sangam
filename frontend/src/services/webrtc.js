@@ -48,19 +48,26 @@ class WebRTCService {
     const peer = new SimplePeer({
       initiator,
       trickle: true,
-      stream
+      stream,
+      config: {
+        iceServers: [
+          { urls: 'stun:stun.l.google.com:19302' },
+          { urls: 'stun:stun1.l.google.com:19302' },
+          { urls: 'stun:stun2.l.google.com:19302' }
+        ]
+      }
     });
 
     peer.on('signal', (signal) => {
+      console.log('Signal generated:', signal.type, 'for peer:', socketId);
       if (signal.type === 'offer') {
         this.socket.emit('offer', { to: socketId, offer: signal, type: 'video' });
       } else if (signal.type === 'answer') {
         this.socket.emit('answer', { to: socketId, answer: signal });
+      } else {
+        // ICE candidates
+        this.socket.emit('ice-candidate', { to: socketId, candidate: signal });
       }
-    });
-
-    peer.on('ice-candidate', (candidate) => {
-      this.socket.emit('ice-candidate', { to: socketId, candidate });
     });
 
     peer.on('error', (err) => {
