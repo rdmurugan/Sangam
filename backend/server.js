@@ -110,11 +110,16 @@ io.on('connection', (socket) => {
     // Waiting room logic
     if (room.settings.waitingRoomEnabled && !isHost) {
       const waitingRoom = waitingRooms.get(roomId) || [];
-      waitingRoom.push({ socketId: socket.id, userName });
-      waitingRooms.set(roomId, waitingRoom);
+      // Check if user is already in waiting room (prevent duplicates)
+      const alreadyWaiting = waitingRoom.some(u => u.socketId === socket.id);
 
-      socket.emit('waiting-room');
-      io.to(roomId).emit('user-waiting', { socketId: socket.id, userName });
+      if (!alreadyWaiting) {
+        waitingRoom.push({ socketId: socket.id, userName });
+        waitingRooms.set(roomId, waitingRoom);
+
+        socket.emit('waiting-room');
+        io.to(roomId).emit('user-waiting', { socketId: socket.id, userName });
+      }
       return;
     }
 
@@ -143,6 +148,9 @@ io.on('connection', (socket) => {
 
   // Admit user from waiting room
   socket.on('admit-user', ({ roomId, socketId }) => {
+    const room = rooms.get(roomId);
+    if (!room) return;
+
     const waitingRoom = waitingRooms.get(roomId) || [];
     const userIndex = waitingRoom.findIndex(u => u.socketId === socketId);
 
@@ -151,8 +159,37 @@ io.on('connection', (socket) => {
       waitingRoom.splice(userIndex, 1);
       waitingRooms.set(roomId, waitingRoom);
 
-      io.to(socketId).emit('admitted-to-room', { roomId });
-      io.to(roomId).emit('user-admitted', { socketId });
+      // Get the socket reference
+      const admittedSocket = io.sockets.sockets.get(socketId);
+      if (admittedSocket) {
+        // Join the room directly
+        admittedSocket.join(roomId);
+
+        const participant = {
+          socketId: socketId,
+          userName: user.userName,
+          isHost: false,
+          audioEnabled: true,
+          videoEnabled: true,
+          isScreenSharing: false
+        };
+
+        room.participants.push(participant);
+
+        // Notify the admitted user
+        admittedSocket.emit('admitted-to-room', { roomId, userName: user.userName });
+
+        // Notify existing participants
+        admittedSocket.to(roomId).emit('user-joined', participant);
+
+        // Send current participants to admitted user
+        admittedSocket.emit('room-participants', room.participants.filter(p => p.socketId !== socketId));
+
+        // Notify host that user was admitted
+        io.to(roomId).emit('user-admitted', { socketId });
+
+        console.log(`${user.userName} admitted to room ${roomId}`);
+      }
     }
   });
 

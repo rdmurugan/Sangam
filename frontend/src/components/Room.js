@@ -119,8 +119,9 @@ const Room = () => {
     });
 
     socket.on('admitted-to-room', () => {
+      console.log('Admitted to room - now joining');
       setIsInWaitingRoom(false);
-      socket.emit('join-room', { roomId, userName, isHost });
+      // Don't emit join-room again - backend handles joining directly
     });
 
     socket.on('room-participants', (currentParticipants) => {
