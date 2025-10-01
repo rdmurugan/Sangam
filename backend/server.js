@@ -57,6 +57,10 @@ app.use(passport.session());
 // Authentication routes
 app.use('/api/auth', authRoutes);
 
+// TURN server credentials
+const turnRoutes = require('./routes/turn');
+app.use('/api/turn', turnRoutes);
+
 // Store active rooms and participants
 const rooms = new Map();
 const waitingRooms = new Map();

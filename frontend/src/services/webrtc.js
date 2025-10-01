@@ -67,48 +67,42 @@ class WebRTCService {
     }
   }
 
-  createPeer(socketId, initiator, stream) {
+  async getIceServers() {
+    try {
+      const API_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5001';
+      const response = await fetch(`${API_URL}/api/turn/credentials`);
+      const data = await response.json();
+      console.log('✅ Fetched TURN credentials:', data.iceServers?.length, 'servers');
+      return data.iceServers;
+    } catch (error) {
+      console.error('❌ Failed to fetch TURN credentials, using fallback:', error);
+      // Fallback to hardcoded servers
+      return [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        {
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject'
+        }
+      ];
+    }
+  }
+
+  async createPeer(socketId, initiator, stream) {
     console.log('Creating peer for:', socketId, 'Initiator:', initiator, 'Stream tracks:', stream?.getTracks().map(t => t.kind));
+
+    // Fetch fresh TURN credentials
+    const iceServers = this.cachedIceServers || await this.getIceServers();
+    // Cache for reuse within same session
+    this.cachedIceServers = iceServers;
 
     const peer = new SimplePeer({
       initiator,
       trickle: true,
       stream,
       config: {
-        iceServers: [
-          // Google STUN servers
-          { urls: 'stun:stun.l.google.com:19302' },
-          { urls: 'stun:stun1.l.google.com:19302' },
-          { urls: 'stun:stun2.l.google.com:19302' },
-          // ExpressTURN - 1TB free/month (much better than OpenRelay's 20GB)
-          {
-            urls: 'turn:a.relay.metered.ca:80',
-            username: 'baf689ace88fa75b72a36f2f',
-            credential: 'S24IZWC6aMVGdC1r'
-          },
-          {
-            urls: 'turn:a.relay.metered.ca:443',
-            username: 'baf689ace88fa75b72a36f2f',
-            credential: 'S24IZWC6aMVGdC1r'
-          },
-          {
-            urls: 'turn:a.relay.metered.ca:443?transport=tcp',
-            username: 'baf689ace88fa75b72a36f2f',
-            credential: 'S24IZWC6aMVGdC1r'
-          },
-          // OpenRelay as backup (20GB/month)
-          {
-            urls: 'turn:openrelay.metered.ca:80',
-            username: 'openrelayproject',
-            credential: 'openrelayproject'
-          },
-          // FreeTURN as additional backup
-          {
-            urls: 'turn:freeturn.net:3478',
-            username: 'free',
-            credential: 'free'
-          }
-        ],
+        iceServers,
         // Important for mobile devices and connection stability
         sdpSemantics: 'unified-plan',
         // Enable all candidates (host, srflx, relay)
