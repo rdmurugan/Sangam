@@ -4,6 +4,9 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
   const videoRef = useRef();
 
   useEffect(() => {
+    let metadataLoaded = false;
+    let fallbackTimeout = null;
+
     if (videoRef.current && stream) {
       // Validate stream has active tracks
       const videoTracks = stream.getVideoTracks();
@@ -32,9 +35,6 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
 
       console.log(`[VideoPlayer ${userName}] Setting srcObject on video element`);
       videoRef.current.srcObject = stream;
-
-      let metadataLoaded = false;
-      let fallbackTimeout = null;
 
       // Wait for loadedmetadata event to ensure video dimensions are available
       const handleLoadedMetadata = () => {
