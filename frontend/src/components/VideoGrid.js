@@ -13,16 +13,35 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         label: t.label
       })));
 
+      // Set srcObject
       node.srcObject = stream;
+      console.log(`[VideoPlayer ${userName}] srcObject assigned, attempting play...`);
+
+      // Add event listeners for debugging
+      node.onloadedmetadata = () => {
+        console.log(`[VideoPlayer ${userName}] Metadata loaded - videoWidth: ${node.videoWidth}, videoHeight: ${node.videoHeight}`);
+      };
+
+      node.onloadeddata = () => {
+        console.log(`[VideoPlayer ${userName}] Data loaded, ready to play`);
+      };
 
       // Immediately try to play
-      node.play()
-        .then(() => {
-          console.log(`✅ [VideoPlayer ${userName}] Video playing`);
-        })
-        .catch((error) => {
-          console.log(`[VideoPlayer ${userName}] Play error:`, error.name, error.message);
-        });
+      const playPromise = node.play();
+
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log(`✅ [VideoPlayer ${userName}] Video playing successfully`);
+          })
+          .catch((error) => {
+            console.error(`❌ [VideoPlayer ${userName}] Play error:`, error.name, error.message);
+            // Try to play again on user interaction
+            if (error.name === 'NotAllowedError') {
+              console.log(`[VideoPlayer ${userName}] Autoplay blocked - will retry on user interaction`);
+            }
+          });
+      }
     }
   }, [stream, userName]);
 
@@ -83,7 +102,7 @@ const VideoGrid = ({ localStream, peers, localUserName }) => {
               key={socketId}
               stream={peerData.stream}
               userName={peerData.userName}
-              muted={true}
+              muted={false}
             />
           );
         })}
