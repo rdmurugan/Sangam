@@ -153,7 +153,7 @@ const Room = () => {
       });
 
       // Create peer connections for existing participants
-      currentParticipants.forEach(participant => {
+      currentParticipants.forEach(async (participant) => {
         // Skip if peer already exists
         if (peersRef.current.has(participant.socketId)) {
           console.log('Peer already exists for:', participant.socketId);
@@ -161,7 +161,7 @@ const Room = () => {
         }
 
         console.log('Creating peer for existing participant:', participant.socketId);
-        const peer = webrtcService.createPeer(participant.socketId, true, stream);
+        const peer = await webrtcService.createPeer(participant.socketId, true, stream);
 
         // Add peer to ref immediately so it can receive answer/ice-candidates
         peersRef.current.set(participant.socketId, { peer, stream: null, userName: participant.userName });
@@ -206,7 +206,7 @@ const Room = () => {
       console.log('Waiting for offer from new user:', participant.socketId);
     });
 
-    socket.on('offer', ({ from, offer }) => {
+    socket.on('offer', async ({ from, offer }) => {
       console.log('📥 Received OFFER from:', from);
 
       // Skip if peer already exists
@@ -216,7 +216,7 @@ const Room = () => {
       }
 
       console.log('🆕 Creating new peer for offer from:', from);
-      const peer = webrtcService.addPeer(from, offer, stream);
+      const peer = await webrtcService.addPeer(from, offer, stream);
 
       // Get userName from participants list
       const participant = participants.find(p => p.socketId === from);
@@ -368,8 +368,8 @@ const Room = () => {
         socketRef.current.emit('start-screen-share', { roomId });
 
         // Create new peer connections with screen stream
-        peers.forEach((peerData, socketId) => {
-          const peer = webrtcService.createPeer(socketId, true, screenStream);
+        peers.forEach(async (peerData, socketId) => {
+          const peer = await webrtcService.createPeer(socketId, true, screenStream);
 
           peer.on('stream', (remoteStream) => {
             setPeers(prev => new Map(prev).set(socketId, {

@@ -255,8 +255,8 @@ class WebRTCService {
     return peer;
   }
 
-  addPeer(socketId, signal, stream) {
-    const peer = this.createPeer(socketId, false, stream);
+  async addPeer(socketId, signal, stream) {
+    const peer = await this.createPeer(socketId, false, stream);
     peer.signal(signal);
     return peer;
   }
