@@ -159,8 +159,6 @@ class WebRTCService {
     // Monitor ICE connection state for debugging
     if (peer._pc) {
       const pc = peer._pc;
-      const remoteStream = new MediaStream();
-      let streamEmitted = false;
 
       pc.oniceconnectionstatechange = () => {
         console.log(`[${socketId}] ICE connection state:`, pc.iceConnectionState);
@@ -202,37 +200,14 @@ class WebRTCService {
         console.log(`[${socketId}] Signaling state:`, pc.signalingState);
       };
 
-      // CRITICAL FIX: Hook into ontrack to manually emit stream
-      // Save SimplePeer's original ontrack handler
+      // Log when tracks are received
       const originalOnTrack = pc.ontrack;
-
       pc.ontrack = (event) => {
         console.log(`[${socketId}] Track received:`, event.track.kind, 'streams:', event.streams.length);
 
-        // Call SimplePeer's original handler first
+        // Call SimplePeer's original handler
         if (originalOnTrack) {
           originalOnTrack.call(pc, event);
-        }
-
-        // Add track to our custom stream
-        const track = event.track;
-        if (!remoteStream.getTracks().find(t => t.id === track.id)) {
-          remoteStream.addTrack(track);
-          console.log(`[${socketId}] Added ${track.kind} track. Total tracks:`, remoteStream.getTracks().length);
-        }
-
-        // Only emit stream manually if SimplePeer hasn't already done it
-        if (!streamEmitted && !simplePeerStreamReceived && remoteStream.getTracks().length > 0) {
-          streamEmitted = true;
-          setTimeout(() => {
-            // Double-check SimplePeer didn't emit during the delay
-            if (!simplePeerStreamReceived) {
-              console.log(`[${socketId}] ⚠️ SimplePeer didn't emit stream, manually emitting with ${remoteStream.getTracks().length} tracks`);
-              peer.emit('stream', remoteStream);
-            } else {
-              console.log(`[${socketId}] ✅ SimplePeer already emitted stream, skipping manual emit`);
-            }
-          }, 300); // Small delay to collect all tracks and let SimplePeer emit first
         }
       };
     }
