@@ -78,19 +78,35 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       setTimeout(() => {
         if (!metadataLoaded && videoRef.current) {
           console.log(`[VideoPlayer ${userName}] ⚠️ Metadata event didn't fire, trying to play anyway...`);
+          console.log(`[VideoPlayer ${userName}] Current state:`, {
+            srcObject: !!videoRef.current.srcObject,
+            readyState: videoRef.current.readyState,
+            paused: videoRef.current.paused,
+            muted: videoRef.current.muted,
+            networkState: videoRef.current.networkState
+          });
+
           const playPromise = videoRef.current.play();
+          console.log(`[VideoPlayer ${userName}] play() returned:`, playPromise);
+
           if (playPromise !== undefined) {
             playPromise
               .then(() => {
                 console.log(`✅ [VideoPlayer ${userName}] Video playing successfully (fallback)`);
                 console.log(`[VideoPlayer ${userName}] Dimensions:`, {
                   videoWidth: videoRef.current.videoWidth,
-                  videoHeight: videoRef.current.videoHeight
+                  videoHeight: videoRef.current.videoHeight,
+                  readyState: videoRef.current.readyState,
+                  paused: videoRef.current.paused
                 });
               })
               .catch(error => {
-                console.error(`❌ [VideoPlayer ${userName}] Error playing video (fallback):`, error.name, error.message);
+                console.error(`❌ [VideoPlayer ${userName}] Error playing video (fallback):`, error);
+                console.error(`[VideoPlayer ${userName}] Error name:`, error.name);
+                console.error(`[VideoPlayer ${userName}] Error message:`, error.message);
               });
+          } else {
+            console.warn(`[VideoPlayer ${userName}] play() returned undefined!`);
           }
         }
       }, 500); // Wait 500ms for metadata event
