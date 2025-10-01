@@ -172,6 +172,13 @@ class WebRTCService {
     if (peer._pc) {
       const pc = peer._pc;
       console.log(`[${socketId}] Initial ICE state:`, pc.iceConnectionState);
+      console.log(`[${socketId}] Initial ICE gathering state:`, pc.iceGatheringState);
+      console.log(`[${socketId}] Initial connection state:`, pc.connectionState);
+      console.log(`[${socketId}] Initial signaling state:`, pc.signalingState);
+
+      pc.addEventListener('icegatheringstatechange', () => {
+        console.log(`🟢 [${socketId}] ICE gathering state:`, pc.iceGatheringState);
+      });
 
       pc.addEventListener('iceconnectionstatechange', () => {
         console.log(`🔵 [${socketId}] ICE connection state:`, pc.iceConnectionState);
@@ -202,9 +209,15 @@ class WebRTCService {
       setTimeout(() => {
         console.log(`⏱️ [${socketId}] ICE state after 10s:`, pc.iceConnectionState);
         console.log(`⏱️ [${socketId}] Connection state after 10s:`, pc.connectionState);
+        console.log(`⏱️ [${socketId}] ICE gathering state after 10s:`, pc.iceGatheringState);
+        console.log(`⏱️ [${socketId}] Signaling state after 10s:`, pc.signalingState);
 
         if (pc.iceConnectionState === 'new' || pc.iceConnectionState === 'checking') {
           console.error(`❌ [${socketId}] ICE STUCK at '${pc.iceConnectionState}' after 10s. Connection failed.`);
+
+          // Log remote description to debug
+          console.log(`🔍 [${socketId}] Remote description:`, pc.remoteDescription?.type);
+          console.log(`🔍 [${socketId}] Local description:`, pc.localDescription?.type);
         }
       }, 10000);
 
