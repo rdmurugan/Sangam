@@ -63,6 +63,26 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
 
       videoRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
 
+      // Also try canplay event as backup
+      const handleCanPlay = () => {
+        if (!metadataLoaded) {
+          console.log(`[VideoPlayer ${userName}] ✅ canplay event fired`);
+          metadataLoaded = true;
+
+          const playPromise = videoRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log(`✅ [VideoPlayer ${userName}] Video playing successfully (canplay)`);
+              })
+              .catch(error => {
+                console.error(`❌ [VideoPlayer ${userName}] Error playing video (canplay):`, error.name, error.message);
+              });
+          }
+        }
+      };
+      videoRef.current.addEventListener('canplay', handleCanPlay);
+
       // Log video element properties immediately
       console.log(`[VideoPlayer ${userName}] Video element (before metadata):`, {
         videoWidth: videoRef.current.videoWidth,
