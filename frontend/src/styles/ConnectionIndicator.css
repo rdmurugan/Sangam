@@ -33,3 +33,12 @@
     opacity: 0.6;
   }
 }
+
+/* Move to left on mobile to avoid overlapping with panels */
+@media (max-width: 768px) {
+  .connection-indicator {
+    top: 20px;
+    left: 20px;
+    right: auto;
+  }
+}
