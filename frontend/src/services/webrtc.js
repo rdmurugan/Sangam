@@ -122,6 +122,12 @@ class WebRTCService {
 
     peer.on('signal', (signal) => {
       console.log('🔔 Signal generated:', signal.type, 'for peer:', socketId);
+
+      if (!this.socket || !this.socket.connected) {
+        console.error('❌ Socket not connected! Cannot send signal:', signal.type);
+        return;
+      }
+
       if (signal.type === 'offer') {
         console.log('📤 Sending OFFER to:', socketId);
         this.socket.emit('offer', { to: socketId, offer: signal, type: 'video' });

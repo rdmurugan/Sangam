@@ -245,6 +245,7 @@ io.on('connection', (socket) => {
 
   // WebRTC Signaling
   socket.on('offer', ({ to, offer, type }) => {
+    console.log('📤 OFFER relay:', socket.id, '->', to, 'Type:', type);
     socket.to(to).emit('offer', {
       from: socket.id,
       offer,
@@ -253,6 +254,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('answer', ({ to, answer }) => {
+    console.log('📤 ANSWER relay:', socket.id, '->', to);
     socket.to(to).emit('answer', {
       from: socket.id,
       answer

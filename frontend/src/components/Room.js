@@ -207,14 +207,15 @@ const Room = () => {
     });
 
     socket.on('offer', ({ from, offer }) => {
-      console.log('Received offer from:', from);
+      console.log('📥 Received OFFER from:', from);
 
       // Skip if peer already exists
       if (peersRef.current.has(from)) {
-        console.log('Peer already exists for offer from:', from);
+        console.log('⚠️ Peer already exists for offer from:', from);
         return;
       }
 
+      console.log('🆕 Creating new peer for offer from:', from);
       const peer = webrtcService.addPeer(from, offer, stream);
 
       // Get userName from participants list
@@ -247,20 +248,22 @@ const Room = () => {
     });
 
     socket.on('answer', ({ from, answer }) => {
-      console.log('Received answer from:', from);
+      console.log('📥 Received ANSWER from:', from);
       const peerData = peersRef.current.get(from);
       if (peerData && !peerData.peer.destroyed) {
         try {
+          console.log('📤 Signaling answer to peer:', from);
           peerData.peer.signal(answer);
+          console.log('✅ Answer signaled successfully to:', from);
         } catch (error) {
-          console.error('Error signaling answer to peer:', from, error);
+          console.error('❌ Error signaling answer to peer:', from, error);
           // Clean up broken peer
           webrtcService.removePeer(from);
           peersRef.current.delete(from);
           setPeers(new Map(peersRef.current));
         }
       } else {
-        console.error('No peer found for answer from:', from, 'or peer is destroyed');
+        console.error('❌ No peer found for answer from:', from, 'or peer is destroyed');
       }
     });
 
