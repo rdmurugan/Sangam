@@ -15,6 +15,13 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       readyState: t.readyState
     })));
 
+    // Check if tracks have actual data
+    const videoTrack = stream.getVideoTracks()[0];
+    if (videoTrack) {
+      console.log(`[VideoPlayer ${userName}] Video track settings:`, videoTrack.getSettings());
+      console.log(`[VideoPlayer ${userName}] Video track constraints:`, videoTrack.getConstraints());
+    }
+
     // Direct assignment - let browser handle it
     video.srcObject = stream;
 

@@ -161,18 +161,18 @@ class WebRTCService {
       const pc = peer._pc;
 
       pc.oniceconnectionstatechange = () => {
-        console.log(`[${socketId}] ICE connection state:`, pc.iceConnectionState);
+        console.log(`🔵 [${socketId}] ICE connection state:`, pc.iceConnectionState);
 
         if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
-          console.log(`[${socketId}] ✅ ICE CONNECTION ESTABLISHED`);
+          console.log(`✅ [${socketId}] ICE CONNECTION ESTABLISHED`);
         }
 
         if (pc.iceConnectionState === 'failed') {
-          console.log(`[${socketId}] ❌ ICE connection FAILED`);
+          console.error(`❌ [${socketId}] ICE connection FAILED`);
         }
 
         if (pc.iceConnectionState === 'disconnected') {
-          console.log(`[${socketId}] ⚠️ ICE connection DISCONNECTED`);
+          console.warn(`⚠️ [${socketId}] ICE connection DISCONNECTED`);
         }
       };
 
