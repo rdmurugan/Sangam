@@ -288,6 +288,7 @@ button, input, select, textarea {
   overflow: hidden;
   position: relative;
   z-index: 1;
+  padding-bottom: 80px; /* Space for fixed bottom controls */
 }
 
 .main-content {
@@ -387,109 +388,125 @@ button, input, select, textarea {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Controls - Beautiful & Modern */
+/* Controls - Professional Zoom-like Panel */
 .controls-container {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(30, 30, 30, 0.95);
   backdrop-filter: blur(20px);
-  padding: 20px;
+  padding: 10px 20px;
   display: flex;
   justify-content: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 100;
+  height: 80px;
 }
 
 .controls-group {
   display: flex;
-  gap: 12px;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 12px;
-  border-radius: 60px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  gap: 8px;
+  align-items: center;
 }
 
 .control-button {
-  width: 56px;
-  height: 56px;
+  min-width: 48px;
+  height: 48px;
+  padding: 0 16px;
   border: none;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  backdrop-filter: blur(10px);
-  color: white;
-  font-size: 22px;
+  border-radius: 8px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   position: relative;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  gap: 4px;
 }
 
 .control-button:hover {
-  background: rgba(255, 255, 255, 0.25);
-  transform: translateY(-4px) scale(1.1);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .control-button:active {
-  transform: translateY(-2px) scale(1.05);
+  background: rgba(255, 255, 255, 0.15);
 }
 
 .control-button.disabled {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+  background: #ea4335;
+  color: white;
+}
+
+.control-button.disabled:hover {
+  background: #d33426;
 }
 
 .control-button.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  background: #4285f4;
+  color: white;
+}
+
+.control-button.active:hover {
+  background: #3367d6;
 }
 
 .leave-button {
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
-  box-shadow: 0 8px 20px rgba(238, 90, 111, 0.4);
+  background: #ea4335;
+  color: white;
+  margin-left: 8px;
 }
 
 .leave-button:hover {
-  background: linear-gradient(135deg, #ff5252 0%, #e53e53 100%);
-  box-shadow: 0 12px 28px rgba(238, 90, 111, 0.5);
+  background: #d33426;
+}
+
+.control-label {
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.control-divider {
+  width: 1px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
 }
 
 .control-button.notification {
   position: relative;
-  background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
-  animation: pulse-notification 2s ease-in-out infinite;
+  background: #ffa726;
+  color: white;
 }
 
-@keyframes pulse-notification {
-  0%, 100% {
-    box-shadow: 0 8px 20px rgba(255, 167, 38, 0.4);
-  }
-  50% {
-    box-shadow: 0 8px 30px rgba(255, 167, 38, 0.6);
-  }
+.control-button.notification:hover {
+  background: #fb8c00;
 }
 
 .control-button .badge {
   position: absolute;
-  top: -4px;
-  right: -4px;
-  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+  top: 4px;
+  right: 4px;
+  background: #ea4335;
   color: white;
   border-radius: 50%;
-  width: 24px;
-  height: 24px;
+  min-width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 10px;
   font-weight: bold;
-  box-shadow: 0 4px 12px rgba(238, 90, 111, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  padding: 0 4px;
+  border: 2px solid rgba(30, 30, 30, 0.95);
 }
 
 /* Sidebar - Zoom-like Design */
@@ -1300,16 +1317,28 @@ button, input, select, textarea {
     padding: 8px 10px;
   }
 
+  .controls-container {
+    padding: 8px 12px;
+    height: 72px;
+  }
+
   .controls-group {
-    flex-wrap: wrap;
-    padding: 10px;
-    gap: 8px;
+    gap: 6px;
   }
 
   .control-button {
-    width: 50px;
-    height: 50px;
-    font-size: 20px;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 12px;
+    font-size: 12px;
+  }
+
+  .control-label {
+    font-size: 10px;
+  }
+
+  .control-divider {
+    height: 28px;
   }
 
   .close-panel-button,
@@ -1365,15 +1394,28 @@ button, input, select, textarea {
     min-width: 80px;
   }
 
+  .controls-container {
+    padding: 6px 8px;
+    height: 68px;
+  }
+
   .control-button {
-    width: 48px;
-    height: 48px;
-    font-size: 18px;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 8px;
+    font-size: 11px;
+  }
+
+  .control-label {
+    display: none; /* Hide labels on very small screens */
   }
 
   .controls-group {
-    padding: 8px;
-    gap: 6px;
+    gap: 4px;
+  }
+
+  .control-divider {
+    height: 24px;
   }
 
   .whiteboard-toolbar {
