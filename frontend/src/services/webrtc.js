@@ -79,27 +79,34 @@ class WebRTCService {
           // Google STUN servers
           { urls: 'stun:stun.l.google.com:19302' },
           { urls: 'stun:stun1.l.google.com:19302' },
-          // Free TURN servers - multiple providers for reliability
+          { urls: 'stun:stun2.l.google.com:19302' },
+          // ExpressTURN - 1TB free/month (much better than OpenRelay's 20GB)
+          {
+            urls: 'turn:a.relay.metered.ca:80',
+            username: 'baf689ace88fa75b72a36f2f',
+            credential: 'S24IZWC6aMVGdC1r'
+          },
+          {
+            urls: 'turn:a.relay.metered.ca:443',
+            username: 'baf689ace88fa75b72a36f2f',
+            credential: 'S24IZWC6aMVGdC1r'
+          },
+          {
+            urls: 'turn:a.relay.metered.ca:443?transport=tcp',
+            username: 'baf689ace88fa75b72a36f2f',
+            credential: 'S24IZWC6aMVGdC1r'
+          },
+          // OpenRelay as backup (20GB/month)
           {
             urls: 'turn:openrelay.metered.ca:80',
             username: 'openrelayproject',
             credential: 'openrelayproject'
           },
+          // FreeTURN as additional backup
           {
-            urls: 'turn:openrelay.metered.ca:443',
-            username: 'openrelayproject',
-            credential: 'openrelayproject'
-          },
-          {
-            urls: 'turn:openrelay.metered.ca:443?transport=tcp',
-            username: 'openrelayproject',
-            credential: 'openrelayproject'
-          },
-          // Backup TURN server
-          {
-            urls: 'turn:numb.viagenie.ca',
-            username: 'webrtc@live.com',
-            credential: 'muazkh'
+            urls: 'turn:freeturn.net:3478',
+            username: 'free',
+            credential: 'free'
           }
         ],
         // Important for mobile devices and connection stability
