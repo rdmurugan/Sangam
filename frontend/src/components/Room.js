@@ -10,6 +10,7 @@ import WaitingRoomPanel from './WaitingRoomPanel';
 import RecordingIndicator from './RecordingIndicator';
 import ConnectionIndicator from './ConnectionIndicator';
 import MeetingInfo from './MeetingInfo';
+import JoinPrompt from './JoinPrompt';
 
 const Room = () => {
   const { roomId } = useParams();
@@ -17,8 +18,9 @@ const Room = () => {
   const [localStream, setLocalStream] = useState(null);
   const [peers, setPeers] = useState(new Map());
   const [participants, setParticipants] = useState([]);
-  const [userName] = useState(sessionStorage.getItem('userName') || 'Guest');
+  const [userName, setUserName] = useState(sessionStorage.getItem('userName') || '');
   const [isHost] = useState(sessionStorage.getItem('isHost') === 'true');
+  const [showJoinPrompt, setShowJoinPrompt] = useState(!sessionStorage.getItem('userName'));
   const [showSidebar, setShowSidebar] = useState(false);
   const [sidebarTab, setSidebarTab] = useState('chat');
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
@@ -37,12 +39,15 @@ const Room = () => {
   const maxReconnectAttempts = 5;
 
   useEffect(() => {
-    initializeRoom();
+    // Only initialize room if userName is set
+    if (userName) {
+      initializeRoom();
+    }
 
     return () => {
       cleanup();
     };
-  }, []);
+  }, [userName]);
 
   const initializeRoom = async () => {
     try {
@@ -451,6 +456,17 @@ const Room = () => {
     webrtcService.cleanup();
     socketService.disconnect();
   };
+
+  const handleJoin = (name) => {
+    sessionStorage.setItem('userName', name);
+    sessionStorage.setItem('isHost', 'false');
+    setUserName(name);
+    setShowJoinPrompt(false);
+  };
+
+  if (showJoinPrompt) {
+    return <JoinPrompt roomId={roomId} onJoin={handleJoin} />;
+  }
 
   if (isInWaitingRoom) {
     return <WaitingRoom />;

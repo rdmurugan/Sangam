@@ -557,6 +557,9 @@ button, input, select, textarea {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sidebar-tab:hover {
@@ -940,6 +943,69 @@ button, input, select, textarea {
 .remove-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(238, 90, 111, 0.4);
+}
+
+/* Join Prompt - Professional */
+.join-prompt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.join-prompt-container {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  padding: 48px;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  max-width: 480px;
+  width: 90%;
+  animation: slideUp 0.4s ease-out;
+}
+
+.join-prompt-container h2 {
+  margin: 0 0 12px 0;
+  font-size: 32px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+
+.join-prompt-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 32px;
+  font-size: 14px;
+}
+
+.join-prompt-subtitle strong {
+  color: #667eea;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.join-prompt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.join-prompt-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+  font-size: 14px;
 }
 
 /* Waiting Room - Elegant Loading */
