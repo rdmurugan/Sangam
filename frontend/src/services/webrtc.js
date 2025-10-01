@@ -157,10 +157,13 @@ class WebRTCService {
     });
 
     // Monitor ICE connection state for debugging
+    console.log(`[${socketId}] SimplePeer._pc exists:`, !!peer._pc);
+
     if (peer._pc) {
       const pc = peer._pc;
+      console.log(`[${socketId}] Initial ICE state:`, pc.iceConnectionState);
 
-      pc.oniceconnectionstatechange = () => {
+      pc.addEventListener('iceconnectionstatechange', () => {
         console.log(`🔵 [${socketId}] ICE connection state:`, pc.iceConnectionState);
 
         if (pc.iceConnectionState === 'connected' || pc.iceConnectionState === 'completed') {
@@ -174,11 +177,11 @@ class WebRTCService {
         if (pc.iceConnectionState === 'disconnected') {
           console.warn(`⚠️ [${socketId}] ICE connection DISCONNECTED`);
         }
-      };
+      });
 
-      pc.onconnectionstatechange = () => {
-        console.log(`[${socketId}] Connection state:`, pc.connectionState);
-      };
+      pc.addEventListener('connectionstatechange', () => {
+        console.log(`🟡 [${socketId}] Connection state:`, pc.connectionState);
+      });
 
       // Log ALL ICE candidates with details
       pc.onicecandidate = (event) => {
