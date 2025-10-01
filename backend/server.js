@@ -12,9 +12,6 @@ const passport = require('./config/passport');
 const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth');
 
-// Connect to database
-connectDB();
-
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
@@ -388,8 +385,15 @@ io.on('connection', (socket) => {
 const PORT = process.env.PORT || 5001;
 const HOST = process.env.HOST || '0.0.0.0';
 
-server.listen(PORT, HOST, () => {
-  console.log(`Server running on ${HOST}:${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`MongoDB: ${process.env.MONGODB_URI ? 'Connected' : 'Not configured'}`);
-});
+// Connect to database and start server
+const startServer = async () => {
+  await connectDB();
+
+  server.listen(PORT, HOST, () => {
+    console.log(`Server running on ${HOST}:${PORT}`);
+    console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`MongoDB: ${process.env.MONGODB_URI ? 'Connected' : 'Not configured'}`);
+  });
+};
+
+startServer();
