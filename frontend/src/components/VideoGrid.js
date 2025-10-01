@@ -93,9 +93,23 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         autoplay: videoRef.current.autoplay
       });
 
-      // FALLBACK: Also try to play immediately in case metadata event doesn't fire
+      // IMMEDIATE PLAY ATTEMPT - try right away
+      console.log(`[VideoPlayer ${userName}] Attempting immediate play...`);
+      const immediatePlayPromise = videoRef.current.play();
+      if (immediatePlayPromise !== undefined) {
+        immediatePlayPromise
+          .then(() => {
+            console.log(`✅ [VideoPlayer ${userName}] IMMEDIATE play successful!`);
+            metadataLoaded = true; // Prevent other attempts
+          })
+          .catch(error => {
+            console.log(`[VideoPlayer ${userName}] Immediate play failed (expected):`, error.name);
+          });
+      }
+
+      // FALLBACK: Also try to play after delay in case metadata event doesn't fire
       // This can happen with remote MediaStreams
-      setTimeout(() => {
+      const fallbackTimeout = setTimeout(() => {
         if (!metadataLoaded && videoRef.current) {
           console.log(`[VideoPlayer ${userName}] ⚠️ Metadata event didn't fire, trying to play anyway...`);
           console.log(`[VideoPlayer ${userName}] Current state:`, {
@@ -134,6 +148,9 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
 
     // Cleanup on unmount
     return () => {
+      if (fallbackTimeout) {
+        clearTimeout(fallbackTimeout);
+      }
       if (videoRef.current) {
         console.log(`[VideoPlayer ${userName}] Cleaning up - removing srcObject`);
         videoRef.current.srcObject = null;
