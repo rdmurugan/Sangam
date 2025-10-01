@@ -265,17 +265,20 @@ const Room = () => {
     });
 
     socket.on('ice-candidate', ({ from, candidate }) => {
-      console.log('Received ICE candidate from:', from);
+      console.log('📥 Received ICE candidate from:', from, 'Type:', candidate?.candidate?.type || candidate?.type);
       const peerData = peersRef.current.get(from);
       if (peerData && !peerData.peer.destroyed) {
         try {
+          console.log('📤 Signaling ICE candidate to peer:', from);
           peerData.peer.signal(candidate);
+          console.log('✅ ICE candidate signaled successfully to:', from);
         } catch (error) {
-          console.error('Error signaling ICE candidate to peer:', from, error);
+          console.error('❌ Error signaling ICE candidate to peer:', from, error);
           // Don't clean up on ICE candidate errors - they can be non-fatal
         }
       } else {
-        console.error('No peer found for ICE candidate from:', from, 'or peer is destroyed');
+        console.error('❌ No peer found for ICE candidate from:', from, 'or peer is destroyed');
+        console.log('Current peers:', Array.from(peersRef.current.keys()));
       }
     });
 
