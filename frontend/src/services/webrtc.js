@@ -68,16 +68,25 @@ class WebRTCService {
   }
 
   async getIceServers() {
+    // Return cached servers if available
+    if (this.cachedIceServers) {
+      console.log('🔄 Using cached ICE servers:', this.cachedIceServers.length, 'servers');
+      return this.cachedIceServers;
+    }
+
     try {
       const API_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5001';
       const response = await fetch(`${API_URL}/api/turn/credentials`);
       const data = await response.json();
       console.log('✅ Fetched TURN credentials:', data.iceServers?.length, 'servers');
+
+      // Cache for reuse
+      this.cachedIceServers = data.iceServers;
       return data.iceServers;
     } catch (error) {
       console.error('❌ Failed to fetch TURN credentials, using fallback:', error);
       // Fallback to hardcoded servers
-      return [
+      const fallbackServers = [
         { urls: 'stun:stun.l.google.com:19302' },
         { urls: 'stun:stun1.l.google.com:19302' },
         {
@@ -86,16 +95,18 @@ class WebRTCService {
           credential: 'openrelayproject'
         }
       ];
+
+      // Cache fallback too
+      this.cachedIceServers = fallbackServers;
+      return fallbackServers;
     }
   }
 
   async createPeer(socketId, initiator, stream) {
     console.log('Creating peer for:', socketId, 'Initiator:', initiator, 'Stream tracks:', stream?.getTracks().map(t => t.kind));
 
-    // Fetch fresh TURN credentials
-    const iceServers = this.cachedIceServers || await this.getIceServers();
-    // Cache for reuse within same session
-    this.cachedIceServers = iceServers;
+    // Get ICE servers (will use cache if available)
+    const iceServers = await this.getIceServers();
 
     const peer = new SimplePeer({
       initiator,
