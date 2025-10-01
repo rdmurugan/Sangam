@@ -34,6 +34,7 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       videoRef.current.srcObject = stream;
 
       let metadataLoaded = false;
+      let fallbackTimeout = null;
 
       // Wait for loadedmetadata event to ensure video dimensions are available
       const handleLoadedMetadata = () => {
@@ -109,7 +110,7 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
 
       // FALLBACK: Also try to play after delay in case metadata event doesn't fire
       // This can happen with remote MediaStreams
-      const fallbackTimeout = setTimeout(() => {
+      fallbackTimeout = setTimeout(() => {
         if (!metadataLoaded && videoRef.current) {
           console.log(`[VideoPlayer ${userName}] ⚠️ Metadata event didn't fire, trying to play anyway...`);
           console.log(`[VideoPlayer ${userName}] Current state:`, {
