@@ -136,7 +136,7 @@ class WebRTCService {
         this.socket.emit('answer', { to: socketId, answer: signal });
       } else {
         // ICE candidates
-        console.log('📤 Sending ICE CANDIDATE to:', socketId, 'Type:', signal?.candidate?.type);
+        console.log('📤 Sending ICE CANDIDATE to:', socketId, 'Candidate:', signal.candidate);
         this.socket.emit('ice-candidate', { to: socketId, candidate: signal });
       }
     });
@@ -192,16 +192,20 @@ class WebRTCService {
         console.log(`🟡 [${socketId}] Connection state:`, pc.connectionState);
       });
 
-      // Force check ICE state after 3 seconds
+      // Force check ICE state after delays
       setTimeout(() => {
         console.log(`⏱️ [${socketId}] ICE state after 3s:`, pc.iceConnectionState);
         console.log(`⏱️ [${socketId}] Connection state after 3s:`, pc.connectionState);
-        console.log(`⏱️ [${socketId}] Signaling state after 3s:`, pc.signalingState);
+      }, 3000);
+
+      setTimeout(() => {
+        console.log(`⏱️ [${socketId}] ICE state after 10s:`, pc.iceConnectionState);
+        console.log(`⏱️ [${socketId}] Connection state after 10s:`, pc.connectionState);
 
         if (pc.iceConnectionState === 'new' || pc.iceConnectionState === 'checking') {
-          console.error(`❌ [${socketId}] ICE STUCK! Still in '${pc.iceConnectionState}' state. Connection likely blocked.`);
+          console.error(`❌ [${socketId}] ICE STUCK at '${pc.iceConnectionState}' after 10s. Connection failed.`);
         }
-      }, 3000);
+      }, 10000);
 
       // Log ALL ICE candidates with details (use addEventListener to not override SimplePeer's handler)
       pc.addEventListener('icecandidate', (event) => {
