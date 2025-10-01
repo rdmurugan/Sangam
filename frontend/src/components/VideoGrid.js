@@ -1,97 +1,33 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect } from 'react';
 
 const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    const videoElement = videoRef.current;
+    const video = videoRef.current;
+    if (!video || !stream) return;
 
-    if (!videoElement || !stream) {
-      console.log(`[VideoPlayer ${userName}] Missing video element or stream`);
-      return;
-    }
+    console.log(`[VideoPlayer ${userName}] Attaching stream:`, stream.id);
 
-    console.log(`[VideoPlayer ${userName}] Setting stream on video element`);
-    console.log(`[VideoPlayer ${userName}] Stream ID:`, stream.id);
-    console.log(`[VideoPlayer ${userName}] Stream tracks:`, stream.getTracks().map(t => ({
-      kind: t.kind,
-      id: t.id,
-      enabled: t.enabled,
-      readyState: t.readyState,
-      label: t.label
-    })));
+    // Direct assignment - let browser handle it
+    video.srcObject = stream;
 
-    // Check if tracks are active
-    const videoTrack = stream.getVideoTracks()[0];
-    const audioTrack = stream.getAudioTracks()[0];
-    console.log(`[VideoPlayer ${userName}] Video track:`, videoTrack ? {
-      id: videoTrack.id,
-      enabled: videoTrack.enabled,
-      muted: videoTrack.muted,
-      readyState: videoTrack.readyState
-    } : 'NO VIDEO TRACK');
-    console.log(`[VideoPlayer ${userName}] Audio track:`, audioTrack ? {
-      id: audioTrack.id,
-      enabled: audioTrack.enabled,
-      muted: audioTrack.muted,
-      readyState: audioTrack.readyState
-    } : 'NO AUDIO TRACK');
-
-    // Set srcObject
-    videoElement.srcObject = stream;
-    console.log(`[VideoPlayer ${userName}] srcObject assigned, attempting play...`);
-
-    // Add event listeners for debugging
-    const handleLoadedMetadata = () => {
-      console.log(`[VideoPlayer ${userName}] Metadata loaded - videoWidth: ${videoElement.videoWidth}, videoHeight: ${videoElement.videoHeight}`);
-    };
-
-    const handleLoadedData = () => {
-      console.log(`[VideoPlayer ${userName}] Data loaded, ready to play`);
-    };
-
-    const handleCanPlay = () => {
-      console.log(`[VideoPlayer ${userName}] Can play - readyState: ${videoElement.readyState}`);
-    };
-
-    videoElement.addEventListener('loadedmetadata', handleLoadedMetadata);
-    videoElement.addEventListener('loadeddata', handleLoadedData);
-    videoElement.addEventListener('canplay', handleCanPlay);
-
-    // Force load
-    videoElement.load();
-
-    // Immediately try to play
-    const playPromise = videoElement.play();
-
-    if (playPromise !== undefined) {
-      playPromise
-        .then(() => {
-          console.log(`✅ [VideoPlayer ${userName}] Video playing successfully`);
-        })
-        .catch((error) => {
-          console.error(`❌ [VideoPlayer ${userName}] Play error:`, error.name, error.message);
-          // Try to play again on user interaction
-          if (error.name === 'NotAllowedError') {
-            console.log(`[VideoPlayer ${userName}] Autoplay blocked - will retry on user interaction`);
-          }
-        });
-    }
-
-    // Cleanup
     return () => {
-      console.log(`[VideoPlayer ${userName}] Cleaning up`);
-      videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      videoElement.removeEventListener('loadeddata', handleLoadedData);
-      videoElement.removeEventListener('canplay', handleCanPlay);
-      if (videoElement.srcObject) {
-        videoElement.srcObject = null;
+      if (video.srcObject) {
+        video.srcObject = null;
       }
     };
   }, [stream, userName]);
 
+  const handleClick = () => {
+    const video = videoRef.current;
+    if (video && video.paused) {
+      video.play().catch(err => console.warn('Play failed:', err));
+    }
+  };
+
   return (
-    <div className="video-container">
+    <div className="video-container" onClick={handleClick} style={{ cursor: 'pointer' }}>
       <video
         ref={videoRef}
         autoPlay
