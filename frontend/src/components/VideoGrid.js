@@ -33,8 +33,11 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       console.log(`[VideoPlayer ${userName}] Setting srcObject on video element`);
       videoRef.current.srcObject = stream;
 
+      let metadataLoaded = false;
+
       // Wait for loadedmetadata event to ensure video dimensions are available
       const handleLoadedMetadata = () => {
+        metadataLoaded = true;
         console.log(`[VideoPlayer ${userName}] ✅ Metadata loaded - dimensions:`, {
           videoWidth: videoRef.current.videoWidth,
           videoHeight: videoRef.current.videoHeight,
@@ -46,15 +49,14 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
-              console.log(`✅ [VideoPlayer ${userName}] Video playing successfully`);
+              console.log(`✅ [VideoPlayer ${userName}] Video playing successfully (after metadata)`);
               console.log(`[VideoPlayer ${userName}] After play - dimensions:`, {
                 videoWidth: videoRef.current.videoWidth,
                 videoHeight: videoRef.current.videoHeight
               });
             })
             .catch(error => {
-              console.error(`❌ [VideoPlayer ${userName}] Error playing video:`, error.name, error.message);
-              console.error(`[VideoPlayer ${userName}] Full error:`, error);
+              console.error(`❌ [VideoPlayer ${userName}] Error playing video (after metadata):`, error.name, error.message);
             });
         }
       };
@@ -70,6 +72,28 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         muted: videoRef.current.muted,
         autoplay: videoRef.current.autoplay
       });
+
+      // FALLBACK: Also try to play immediately in case metadata event doesn't fire
+      // This can happen with remote MediaStreams
+      setTimeout(() => {
+        if (!metadataLoaded && videoRef.current) {
+          console.log(`[VideoPlayer ${userName}] ⚠️ Metadata event didn't fire, trying to play anyway...`);
+          const playPromise = videoRef.current.play();
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log(`✅ [VideoPlayer ${userName}] Video playing successfully (fallback)`);
+                console.log(`[VideoPlayer ${userName}] Dimensions:`, {
+                  videoWidth: videoRef.current.videoWidth,
+                  videoHeight: videoRef.current.videoHeight
+                });
+              })
+              .catch(error => {
+                console.error(`❌ [VideoPlayer ${userName}] Error playing video (fallback):`, error.name, error.message);
+              });
+          }
+        }
+      }, 500); // Wait 500ms for metadata event
     }
 
     // Cleanup on unmount
