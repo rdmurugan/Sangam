@@ -91,11 +91,19 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
 });
 
 // Google OAuth
-router.get('/google',
+router.get('/google', (req, res, next) => {
+  // Check if Google OAuth is configured
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(503).json({
+      error: 'Google OAuth not configured',
+      message: 'Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to environment variables'
+    });
+  }
+
   passport.authenticate('google', {
     scope: ['profile', 'email']
-  })
-);
+  })(req, res, next);
+});
 
 router.get('/google/callback',
   passport.authenticate('google', {
@@ -112,11 +120,19 @@ router.get('/google/callback',
 );
 
 // Facebook OAuth
-router.get('/facebook',
+router.get('/facebook', (req, res, next) => {
+  // Check if Facebook OAuth is configured
+  if (!process.env.FACEBOOK_APP_ID || !process.env.FACEBOOK_APP_SECRET) {
+    return res.status(503).json({
+      error: 'Facebook OAuth not configured',
+      message: 'Please add FACEBOOK_APP_ID and FACEBOOK_APP_SECRET to environment variables'
+    });
+  }
+
   passport.authenticate('facebook', {
     scope: ['email']
-  })
-);
+  })(req, res, next);
+});
 
 router.get('/facebook/callback',
   passport.authenticate('facebook', {
