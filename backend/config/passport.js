@@ -20,6 +20,7 @@ passport.deserializeUser(async (id, done) => {
 
 // Google OAuth Strategy
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+  console.log('✅ Google OAuth configured');
   passport.use(
     new GoogleStrategy(
       {
@@ -71,6 +72,8 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
       }
     )
   );
+} else {
+  console.log('⚠️ Google OAuth NOT configured - GOOGLE_CLIENT_ID or GOOGLE_CLIENT_SECRET missing');
 }
 
 // Facebook OAuth Strategy
@@ -129,6 +132,8 @@ if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_SECRET) {
       }
     )
   );
+} else {
+  console.log('⚠️ Facebook OAuth NOT configured - FACEBOOK_APP_ID or FACEBOOK_APP_SECRET missing');
 }
 
 module.exports = passport;
