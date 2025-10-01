@@ -1,48 +1,68 @@
 import React, { useRef, useEffect, useCallback } from 'react';
 
 const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
-  const videoRef = useCallback((node) => {
-    if (node && stream) {
-      console.log(`[VideoPlayer ${userName}] Setting stream on video element via ref callback`);
-      console.log(`[VideoPlayer ${userName}] Stream ID:`, stream.id);
-      console.log(`[VideoPlayer ${userName}] Stream tracks:`, stream.getTracks().map(t => ({
-        kind: t.kind,
-        id: t.id,
-        enabled: t.enabled,
-        readyState: t.readyState,
-        label: t.label
-      })));
+  const videoRef = useRef(null);
 
-      // Set srcObject
-      node.srcObject = stream;
-      console.log(`[VideoPlayer ${userName}] srcObject assigned, attempting play...`);
+  useEffect(() => {
+    const videoElement = videoRef.current;
 
-      // Add event listeners for debugging
-      node.onloadedmetadata = () => {
-        console.log(`[VideoPlayer ${userName}] Metadata loaded - videoWidth: ${node.videoWidth}, videoHeight: ${node.videoHeight}`);
-      };
-
-      node.onloadeddata = () => {
-        console.log(`[VideoPlayer ${userName}] Data loaded, ready to play`);
-      };
-
-      // Immediately try to play
-      const playPromise = node.play();
-
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log(`✅ [VideoPlayer ${userName}] Video playing successfully`);
-          })
-          .catch((error) => {
-            console.error(`❌ [VideoPlayer ${userName}] Play error:`, error.name, error.message);
-            // Try to play again on user interaction
-            if (error.name === 'NotAllowedError') {
-              console.log(`[VideoPlayer ${userName}] Autoplay blocked - will retry on user interaction`);
-            }
-          });
-      }
+    if (!videoElement || !stream) {
+      console.log(`[VideoPlayer ${userName}] Missing video element or stream`);
+      return;
     }
+
+    console.log(`[VideoPlayer ${userName}] Setting stream on video element`);
+    console.log(`[VideoPlayer ${userName}] Stream ID:`, stream.id);
+    console.log(`[VideoPlayer ${userName}] Stream tracks:`, stream.getTracks().map(t => ({
+      kind: t.kind,
+      id: t.id,
+      enabled: t.enabled,
+      readyState: t.readyState,
+      label: t.label
+    })));
+
+    // Set srcObject
+    videoElement.srcObject = stream;
+    console.log(`[VideoPlayer ${userName}] srcObject assigned, attempting play...`);
+
+    // Add event listeners for debugging
+    const handleLoadedMetadata = () => {
+      console.log(`[VideoPlayer ${userName}] Metadata loaded - videoWidth: ${videoElement.videoWidth}, videoHeight: ${videoElement.videoHeight}`);
+    };
+
+    const handleLoadedData = () => {
+      console.log(`[VideoPlayer ${userName}] Data loaded, ready to play`);
+    };
+
+    videoElement.addEventListener('loadedmetadata', handleLoadedMetadata);
+    videoElement.addEventListener('loadeddata', handleLoadedData);
+
+    // Immediately try to play
+    const playPromise = videoElement.play();
+
+    if (playPromise !== undefined) {
+      playPromise
+        .then(() => {
+          console.log(`✅ [VideoPlayer ${userName}] Video playing successfully`);
+        })
+        .catch((error) => {
+          console.error(`❌ [VideoPlayer ${userName}] Play error:`, error.name, error.message);
+          // Try to play again on user interaction
+          if (error.name === 'NotAllowedError') {
+            console.log(`[VideoPlayer ${userName}] Autoplay blocked - will retry on user interaction`);
+          }
+        });
+    }
+
+    // Cleanup
+    return () => {
+      console.log(`[VideoPlayer ${userName}] Cleaning up`);
+      videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      videoElement.removeEventListener('loadeddata', handleLoadedData);
+      if (videoElement.srcObject) {
+        videoElement.srcObject = null;
+      }
+    };
   }, [stream, userName]);
 
   return (
