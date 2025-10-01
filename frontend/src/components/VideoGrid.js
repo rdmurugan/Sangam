@@ -33,36 +33,43 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       console.log(`[VideoPlayer ${userName}] Setting srcObject on video element`);
       videoRef.current.srcObject = stream;
 
-      // Log video element properties
-      console.log(`[VideoPlayer ${userName}] Video element:`, {
+      // Wait for loadedmetadata event to ensure video dimensions are available
+      const handleLoadedMetadata = () => {
+        console.log(`[VideoPlayer ${userName}] ✅ Metadata loaded - dimensions:`, {
+          videoWidth: videoRef.current.videoWidth,
+          videoHeight: videoRef.current.videoHeight,
+          readyState: videoRef.current.readyState
+        });
+
+        // Try to play once metadata is loaded
+        const playPromise = videoRef.current.play();
+        if (playPromise !== undefined) {
+          playPromise
+            .then(() => {
+              console.log(`✅ [VideoPlayer ${userName}] Video playing successfully`);
+              console.log(`[VideoPlayer ${userName}] After play - dimensions:`, {
+                videoWidth: videoRef.current.videoWidth,
+                videoHeight: videoRef.current.videoHeight
+              });
+            })
+            .catch(error => {
+              console.error(`❌ [VideoPlayer ${userName}] Error playing video:`, error.name, error.message);
+              console.error(`[VideoPlayer ${userName}] Full error:`, error);
+            });
+        }
+      };
+
+      videoRef.current.addEventListener('loadedmetadata', handleLoadedMetadata);
+
+      // Log video element properties immediately
+      console.log(`[VideoPlayer ${userName}] Video element (before metadata):`, {
         videoWidth: videoRef.current.videoWidth,
         videoHeight: videoRef.current.videoHeight,
         readyState: videoRef.current.readyState,
-        paused: videoRef.current.paused
+        paused: videoRef.current.paused,
+        muted: videoRef.current.muted,
+        autoplay: videoRef.current.autoplay
       });
-
-      // Important for mobile: ensure video plays
-      const playPromise = videoRef.current.play();
-      if (playPromise !== undefined) {
-        playPromise
-          .then(() => {
-            console.log(`✅ [VideoPlayer ${userName}] Video playing successfully`);
-            console.log(`[VideoPlayer ${userName}] After play - dimensions:`, {
-              videoWidth: videoRef.current.videoWidth,
-              videoHeight: videoRef.current.videoHeight
-            });
-          })
-          .catch(error => {
-            console.error(`❌ [VideoPlayer ${userName}] Error playing video:`, error.name, error.message);
-            // Try again after user interaction on mobile
-            if (!muted) {
-              setTimeout(() => {
-                console.log(`[VideoPlayer ${userName}] Retrying play...`);
-                videoRef.current?.play().catch(e => console.error('Retry failed:', e));
-              }, 1000);
-            }
-          });
-      }
     }
 
     // Cleanup on unmount
