@@ -116,7 +116,13 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         webkit-playsinline="true"
         controls={false}
         preload="auto"
-        style={{ objectFit: 'cover' }}
+        style={{
+          objectFit: 'cover',
+          width: '100%',
+          height: '100%',
+          minWidth: '320px',
+          minHeight: '220px'
+        }}
       />
       <div className="video-label">{userName}</div>
     </div>
