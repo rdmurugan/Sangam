@@ -4,8 +4,7 @@ import socketService from '../services/socket';
 import webrtcService from '../services/webrtc';
 import VideoGrid from './VideoGrid';
 import Controls from './Controls';
-import Chat from './Chat';
-import Participants from './Participants';
+import Sidebar from './Sidebar';
 import WaitingRoom from './WaitingRoom';
 import WaitingRoomPanel from './WaitingRoomPanel';
 import RecordingIndicator from './RecordingIndicator';
@@ -20,8 +19,8 @@ const Room = () => {
   const [participants, setParticipants] = useState([]);
   const [userName] = useState(sessionStorage.getItem('userName') || 'Guest');
   const [isHost] = useState(sessionStorage.getItem('isHost') === 'true');
-  const [showChat, setShowChat] = useState(false);
-  const [showParticipants, setShowParticipants] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [sidebarTab, setSidebarTab] = useState('chat');
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [showMeetingInfo, setShowMeetingInfo] = useState(false);
   const [waitingUsers, setWaitingUsers] = useState([]);
@@ -457,35 +456,45 @@ const Room = () => {
     return <WaitingRoom />;
   }
 
+  const handleToggleSidebar = (tab) => {
+    if (showSidebar && sidebarTab === tab) {
+      setShowSidebar(false);
+    } else {
+      setSidebarTab(tab);
+      setShowSidebar(true);
+    }
+  };
+
   return (
     <div className="room-container">
       {isRecording && <RecordingIndicator />}
       <ConnectionIndicator quality={isReconnecting ? 'connecting' : connectionQuality} />
 
-      <div className="main-content">
-        <VideoGrid
-          localStream={localStream}
-          peers={peers}
-          localUserName={userName}
-        />
+      <div className="room-main-area">
+        <div className="main-content">
+          <VideoGrid
+            localStream={localStream}
+            peers={peers}
+            localUserName={userName}
+          />
+        </div>
+
+        {showSidebar && (
+          <Sidebar
+            activeTab={sidebarTab}
+            onClose={() => setShowSidebar(false)}
+            socket={socketRef.current}
+            roomId={roomId}
+            userName={userName}
+            participants={participants}
+            isHost={isHost}
+            onRemoveParticipant={handleRemoveParticipant}
+            localSocketId={socketRef.current?.id}
+            isCollapsed={!showSidebar}
+            onToggleCollapse={() => setShowSidebar(!showSidebar)}
+          />
+        )}
       </div>
-
-      {showChat && (
-        <Chat
-          socket={socketRef.current}
-          roomId={roomId}
-          userName={userName}
-        />
-      )}
-
-      {showParticipants && (
-        <Participants
-          participants={participants}
-          isHost={isHost}
-          onRemoveParticipant={handleRemoveParticipant}
-          localSocketId={socketRef.current?.id}
-        />
-      )}
 
       {showMeetingInfo && (
         <MeetingInfo
@@ -509,11 +518,14 @@ const Room = () => {
         onToggleVideo={handleToggleVideo}
         onScreenShare={handleScreenShare}
         onLeave={leaveRoom}
-        onToggleChat={() => setShowChat(!showChat)}
-        onToggleParticipants={() => setShowParticipants(!showParticipants)}
+        onToggleChat={() => handleToggleSidebar('chat')}
+        onToggleParticipants={() => handleToggleSidebar('participants')}
+        onToggleWhiteboard={() => handleToggleSidebar('whiteboard')}
         onToggleMeetingInfo={() => setShowMeetingInfo(!showMeetingInfo)}
         onToggleWaitingRoom={() => setShowWaitingRoom(!showWaitingRoom)}
         isScreenSharing={isScreenSharing}
+        isSidebarOpen={showSidebar}
+        sidebarTab={sidebarTab}
         isHost={isHost}
         waitingCount={waitingUsers.length}
       />

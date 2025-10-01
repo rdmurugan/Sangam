@@ -326,6 +326,12 @@ io.on('connection', (socket) => {
     });
   });
 
+  // Whiteboard drawing
+  socket.on('whiteboard-draw', (data) => {
+    // Broadcast drawing data to all other users in the room
+    socket.to(data.roomId).emit('whiteboard-draw', data);
+  });
+
   // Recording controls
   socket.on('start-recording', ({ roomId }) => {
     const room = rooms.get(roomId);

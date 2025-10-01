@@ -7,9 +7,12 @@ const Controls = ({
   onLeave,
   onToggleChat,
   onToggleParticipants,
+  onToggleWhiteboard,
   onToggleWaitingRoom,
   onToggleMeetingInfo,
   isScreenSharing,
+  isSidebarOpen,
+  sidebarTab,
   isHost,
   waitingCount = 0
 }) => {
@@ -56,7 +59,7 @@ const Controls = ({
         </button>
 
         <button
-          className="control-button"
+          className={`control-button ${isSidebarOpen && sidebarTab === 'chat' ? 'active' : ''}`}
           onClick={onToggleChat}
           title="Chat"
         >
@@ -64,11 +67,19 @@ const Controls = ({
         </button>
 
         <button
-          className="control-button"
+          className={`control-button ${isSidebarOpen && sidebarTab === 'participants' ? 'active' : ''}`}
           onClick={onToggleParticipants}
           title="Participants"
         >
           👥
+        </button>
+
+        <button
+          className={`control-button ${isSidebarOpen && sidebarTab === 'whiteboard' ? 'active' : ''}`}
+          onClick={onToggleWhiteboard}
+          title="Whiteboard"
+        >
+          📝
         </button>
 
         <button

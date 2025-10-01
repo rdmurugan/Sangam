@@ -260,9 +260,10 @@ button, input, select, textarea {
   letter-spacing: 1px;
 }
 
-/* Room Styles - Premium Design */
+/* Room Styles - Premium Zoom-like Design */
 .room-container {
   display: flex;
+  flex-direction: column;
   height: 100vh;
   background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   position: relative;
@@ -281,13 +282,20 @@ button, input, select, textarea {
   pointer-events: none;
 }
 
+.room-main-area {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
 .main-content {
   flex: 1;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   position: relative;
-  z-index: 1;
 }
 
 .video-grid {
@@ -484,15 +492,103 @@ button, input, select, textarea {
   border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Chat - Elegant Design */
-.chat-container {
+/* Sidebar - Zoom-like Design */
+.sidebar-container {
   width: 380px;
-  background: rgba(255, 255, 255, 0.95);
+  min-width: 320px;
+  max-width: 480px;
+  background: rgba(255, 255, 255, 0.98);
   backdrop-filter: blur(20px);
   display: flex;
   flex-direction: column;
   border-left: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.15);
+  animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.sidebar-tabs {
+  display: flex;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+  border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+  padding: 8px;
+  gap: 4px;
+  position: relative;
+}
+
+.sidebar-tab {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-tab:hover {
+  background: rgba(102, 126, 234, 0.1);
+  color: #667eea;
+}
+
+.sidebar-tab.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.sidebar-close-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  color: #666;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-close-button:hover {
+  background: rgba(255, 0, 0, 0.1);
+  color: #ff0000;
+  transform: scale(1.1);
+}
+
+.sidebar-content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Chat - Elegant Design */
+.chat-container {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: none;
+  box-shadow: none;
 }
 
 .chat-header {
@@ -610,15 +706,144 @@ button, input, select, textarea {
   transform: translateY(0);
 }
 
-/* Participants - Modern & Clean */
-.participants-container {
-  width: 340px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-left: 1px solid rgba(0, 0, 0, 0.1);
+/* Whiteboard - Interactive Design */
+.whiteboard-container {
+  background: transparent;
   display: flex;
   flex-direction: column;
-  box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
+  height: 100%;
+  border: none;
+  box-shadow: none;
+}
+
+.whiteboard-header {
+  padding: 24px;
+  border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+}
+
+.whiteboard-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+
+.whiteboard-toolbar {
+  padding: 16px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e8e8e8;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tool-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tool-button {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #e8e8e8;
+  background: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tool-button:hover {
+  background: #f0f0f0;
+  border-color: #667eea;
+  transform: scale(1.05);
+}
+
+.tool-button.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.tool-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  text-transform: uppercase;
+}
+
+.color-picker {
+  width: 50px;
+  height: 40px;
+  border: 2px solid #e8e8e8;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.color-picker:hover {
+  border-color: #667eea;
+  transform: scale(1.05);
+}
+
+.line-width-slider {
+  width: 80px;
+  height: 6px;
+  border-radius: 3px;
+  background: #e8e8e8;
+  outline: none;
+  cursor: pointer;
+}
+
+.line-width-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #667eea;
+  min-width: 35px;
+}
+
+.whiteboard-canvas-wrapper {
+  flex: 1;
+  background: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.whiteboard-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+  background: white;
+}
+
+.whiteboard-info {
+  padding: 16px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+  border-top: 1px solid #e8e8e8;
+  text-align: center;
+}
+
+.whiteboard-info p {
+  margin: 0;
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+
+/* Participants - Modern & Clean */
+.participants-container {
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  border: none;
+  box-shadow: none;
 }
 
 .participants-header {
@@ -1012,6 +1237,18 @@ button, input, select, textarea {
 }
 
 /* Responsive Design */
+@media (max-width: 1024px) {
+  .sidebar-container {
+    width: 340px;
+    min-width: 300px;
+  }
+
+  .sidebar-tab {
+    font-size: 12px;
+    padding: 10px 12px;
+  }
+}
+
 @media (max-width: 768px) {
   .home-content {
     padding: 40px 30px;
@@ -1019,6 +1256,10 @@ button, input, select, textarea {
 
   .home-content h1 {
     font-size: 36px;
+  }
+
+  .room-main-area {
+    flex-direction: column;
   }
 
   .video-grid {
@@ -1038,8 +1279,7 @@ button, input, select, textarea {
     backdrop-filter: blur(4px);
   }
 
-  .chat-container,
-  .participants-container,
+  .sidebar-container,
   .meeting-info-container {
     position: fixed;
     top: 0;
@@ -1050,9 +1290,20 @@ button, input, select, textarea {
     max-width: 400px;
   }
 
+  .sidebar-tabs {
+    padding: 6px;
+    gap: 3px;
+  }
+
+  .sidebar-tab {
+    font-size: 11px;
+    padding: 8px 10px;
+  }
+
   .controls-group {
     flex-wrap: wrap;
     padding: 10px;
+    gap: 8px;
   }
 
   .control-button {
@@ -1061,7 +1312,8 @@ button, input, select, textarea {
     font-size: 20px;
   }
 
-  .close-panel-button {
+  .close-panel-button,
+  .sidebar-close-button {
     width: 44px;
     height: 44px;
     font-size: 24px;
@@ -1070,9 +1322,26 @@ button, input, select, textarea {
   }
 
   .close-panel-button:hover,
-  .close-panel-button:active {
+  .close-panel-button:active,
+  .sidebar-close-button:hover,
+  .sidebar-close-button:active {
     background: rgba(255, 0, 0, 0.1);
     color: #ff0000;
+  }
+
+  .whiteboard-toolbar {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .tool-button {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+
+  .line-width-slider {
+    width: 60px;
   }
 }
 
@@ -1081,9 +1350,38 @@ button, input, select, textarea {
     padding: 30px 24px;
   }
 
-  .chat-container,
-  .participants-container,
+  .sidebar-container,
   .meeting-info-container {
     max-width: 100%;
+  }
+
+  .sidebar-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .sidebar-tab {
+    flex: 0 0 auto;
+    min-width: 80px;
+  }
+
+  .control-button {
+    width: 48px;
+    height: 48px;
+    font-size: 18px;
+  }
+
+  .controls-group {
+    padding: 8px;
+    gap: 6px;
+  }
+
+  .whiteboard-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .tool-group {
+    justify-content: space-between;
   }
 }
