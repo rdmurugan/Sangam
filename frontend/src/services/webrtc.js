@@ -111,8 +111,8 @@ class WebRTCService {
         ],
         // Important for mobile devices and connection stability
         sdpSemantics: 'unified-plan',
-        // Enable all candidates (host, srflx, relay)
-        iceTransportPolicy: 'all',
+        // Force TURN relay for testing (change back to 'all' once working)
+        iceTransportPolicy: 'relay',
         // Bundle policy for better performance
         bundlePolicy: 'max-bundle',
         // RTC configuration
