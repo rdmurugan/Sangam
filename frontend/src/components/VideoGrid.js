@@ -27,7 +27,7 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
   };
 
   return (
-    <div className="video-container" onClick={handleClick} style={{ cursor: 'pointer' }}>
+    <div className="video-container" onClick={handleClick} style={{ cursor: 'pointer', position: 'relative' }}>
       <video
         ref={videoRef}
         autoPlay
@@ -44,6 +44,21 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         }}
       />
       <div className="video-label">{userName}</div>
+      {!isLocal && stream && (
+        <div style={{
+          position: 'absolute',
+          top: '10px',
+          right: '10px',
+          background: 'rgba(0,0,0,0.7)',
+          color: '#0f0',
+          padding: '4px 8px',
+          borderRadius: '4px',
+          fontSize: '10px',
+          fontFamily: 'monospace'
+        }}>
+          {stream.getTracks().length} tracks
+        </div>
+      )}
     </div>
   );
 };
