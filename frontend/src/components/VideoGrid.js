@@ -164,6 +164,7 @@ const VideoGrid = ({ localStream, peers, localUserName }) => {
               key={socketId}
               stream={peerData.stream}
               userName={peerData.userName}
+              muted={true}
             />
           );
         })}
