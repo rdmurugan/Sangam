@@ -121,13 +121,16 @@ class WebRTCService {
     });
 
     peer.on('signal', (signal) => {
-      console.log('Signal generated:', signal.type, 'for peer:', socketId);
+      console.log('🔔 Signal generated:', signal.type, 'for peer:', socketId);
       if (signal.type === 'offer') {
+        console.log('📤 Sending OFFER to:', socketId);
         this.socket.emit('offer', { to: socketId, offer: signal, type: 'video' });
       } else if (signal.type === 'answer') {
+        console.log('📤 Sending ANSWER to:', socketId);
         this.socket.emit('answer', { to: socketId, answer: signal });
       } else {
         // ICE candidates
+        console.log('📤 Sending ICE CANDIDATE to:', socketId, 'Type:', signal?.candidate?.type);
         this.socket.emit('ice-candidate', { to: socketId, candidate: signal });
       }
     });
