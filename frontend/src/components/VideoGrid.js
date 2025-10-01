@@ -34,6 +34,18 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       }
 
       console.log(`[VideoPlayer ${userName}] Setting srcObject on video element`);
+
+      // Verify all tracks are enabled and live before setting srcObject
+      const allTracks = stream.getTracks();
+      console.log(`[VideoPlayer ${userName}] Track states before srcObject:`, allTracks.map(t => ({
+        kind: t.kind,
+        id: t.id,
+        enabled: t.enabled,
+        readyState: t.readyState,
+        muted: t.muted,
+        label: t.label
+      })));
+
       videoRef.current.srcObject = stream;
 
       // Wait for loadedmetadata event to ensure video dimensions are available
