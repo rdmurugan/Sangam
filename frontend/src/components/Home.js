@@ -1,11 +1,54 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const Home = () => {
   const [userName, setUserName] = useState('');
   const [roomId, setRoomId] = useState('');
   const [nameError, setNameError] = useState('');
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  // Load saved user data on mount
+  useEffect(() => {
+    const savedName = localStorage.getItem('userName');
+    const savedToken = localStorage.getItem('authToken');
+
+    if (savedName && savedToken) {
+      setUserName(savedName);
+    }
+  }, []);
+
+  // Handle OAuth callback
+  useEffect(() => {
+    const token = searchParams.get('token');
+    const name = searchParams.get('name');
+    const error = searchParams.get('error');
+
+    if (error) {
+      alert(`Authentication failed: ${error}`);
+      return;
+    }
+
+    if (token && name) {
+      // Store token and user info
+      localStorage.setItem('authToken', token);
+      localStorage.setItem('userName', name);
+      setUserName(name);
+
+      // Clear URL parameters
+      window.history.replaceState({}, '', '/');
+
+      console.log('✅ Logged in as:', name);
+      alert(`Welcome, ${name}! You are now logged in.`);
+    }
+  }, [searchParams]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userName');
+    setUserName('');
+    alert('Logged out successfully');
+  };
 
   const validateName = (name) => {
     if (!name.trim()) {
@@ -100,14 +143,26 @@ const Home = () => {
     }
   };
 
+  const isLoggedIn = localStorage.getItem('authToken');
+
   return (
     <div className="home-container">
       <div className="home-content">
         <h1>Sangam</h1>
         <p className="subtitle">High-quality video conferencing for everyone</p>
 
-        <div className="google-auth-section">
-          <button onClick={handleGoogleLogin} className="btn btn-google">
+        {isLoggedIn && (
+          <div className="logged-in-status">
+            <p>✅ Logged in as: <strong>{userName}</strong></p>
+            <button onClick={handleLogout} className="btn btn-logout">
+              Logout
+            </button>
+          </div>
+        )}
+
+        {!isLoggedIn && (
+          <div className="google-auth-section">
+            <button onClick={handleGoogleLogin} className="btn btn-google">
             <svg width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
               <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
               <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
@@ -116,12 +171,15 @@ const Home = () => {
               <path fill="none" d="M0 0h48v48H0z"/>
             </svg>
             Sign in with Google
-          </button>
-        </div>
+            </button>
+          </div>
+        )}
 
-        <div className="divider">
-          <span>OR</span>
-        </div>
+        {!isLoggedIn && (
+          <div className="divider">
+            <span>OR</span>
+          </div>
+        )}
 
         <div className="form-group">
           <input
