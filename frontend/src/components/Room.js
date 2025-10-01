@@ -53,6 +53,11 @@ const Room = () => {
       console.log('Camera/microphone access granted');
       setLocalStream(stream);
 
+      // Prefetch ICE servers (TURN credentials) to avoid race condition
+      console.log('Prefetching ICE servers...');
+      await webrtcService.getIceServers();
+      console.log('ICE servers cached');
+
       // Connect to socket
       console.log('Connecting to server...');
       const socket = socketService.connect();
