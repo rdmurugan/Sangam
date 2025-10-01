@@ -119,14 +119,27 @@ router.get('/google', (req, res, next) => {
 router.get('/google/callback',
   passport.authenticate('google', {
     session: false,
-    failureRedirect: `${process.env.FRONTEND_URL}/login?error=google_auth_failed`
+    failureRedirect: `${process.env.FRONTEND_URL}/?error=google_auth_failed`
   }),
   (req, res) => {
-    // Generate token
-    const token = generateToken(req.user);
+    try {
+      console.log('Google OAuth callback - user:', req.user?.email);
 
-    // Redirect to frontend with token
-    res.redirect(`${process.env.FRONTEND_URL}/auth/callback?token=${token}`);
+      if (!req.user) {
+        console.error('No user in callback');
+        return res.redirect(`${process.env.FRONTEND_URL}/?error=no_user`);
+      }
+
+      // Generate token
+      const token = generateToken(req.user);
+      console.log('Token generated successfully');
+
+      // Redirect to frontend with token
+      res.redirect(`${process.env.FRONTEND_URL}/?token=${token}&name=${encodeURIComponent(req.user.name)}`);
+    } catch (error) {
+      console.error('Error in Google callback:', error);
+      res.redirect(`${process.env.FRONTEND_URL}/?error=callback_failed&message=${encodeURIComponent(error.message)}`);
+    }
   }
 );
 
