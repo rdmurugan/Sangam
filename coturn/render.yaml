@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: sangam-coturn
+    env: docker
+    dockerfilePath: ./coturn/Dockerfile
+    dockerContext: ./coturn
+    plan: free
+    envVars:
+      - key: TURN_SECRET
+        generateValue: true
+      - key: PORT
+        value: 3478
+    autoDeploy: true
