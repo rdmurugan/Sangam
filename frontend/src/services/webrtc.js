@@ -203,11 +203,11 @@ class WebRTCService {
         }
       }, 3000);
 
-      // Log ALL ICE candidates with details
-      pc.onicecandidate = (event) => {
+      // Log ALL ICE candidates with details (use addEventListener to not override SimplePeer's handler)
+      pc.addEventListener('icecandidate', (event) => {
         if (event.candidate) {
           const c = event.candidate;
-          console.log(`[${socketId}] ICE candidate:`, {
+          console.log(`[${socketId}] ICE candidate generated:`, {
             type: c.type,
             protocol: c.protocol,
             address: c.address || c.ip,
@@ -216,7 +216,7 @@ class WebRTCService {
         } else {
           console.log(`[${socketId}] ICE gathering completed`);
         }
-      };
+      });
 
       // Monitor signaling state
       pc.onsignalingstatechange = () => {
