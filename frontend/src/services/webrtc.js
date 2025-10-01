@@ -111,8 +111,8 @@ class WebRTCService {
         ],
         // Important for mobile devices and connection stability
         sdpSemantics: 'unified-plan',
-        // Force TURN relay for testing (change back to 'all' once working)
-        iceTransportPolicy: 'relay',
+        // Enable all candidates (host, srflx, relay)
+        iceTransportPolicy: 'all',
         // Bundle policy for better performance
         bundlePolicy: 'max-bundle',
         // RTC configuration
@@ -218,12 +218,23 @@ class WebRTCService {
       pc.addEventListener('icecandidate', (event) => {
         if (event.candidate) {
           const c = event.candidate;
-          console.log(`[${socketId}] ICE candidate generated:`, {
-            type: c.type,
+          console.log(`🧊 [${socketId}] ICE candidate generated:`, {
+            type: c.type, // host, srflx (STUN), or relay (TURN)
             protocol: c.protocol,
             address: c.address || c.ip,
-            port: c.port
+            port: c.port,
+            priority: c.priority,
+            foundation: c.foundation
           });
+
+          // Highlight TURN candidates
+          if (c.type === 'relay') {
+            console.log(`✅ [${socketId}] TURN RELAY candidate found!`);
+          } else if (c.type === 'srflx') {
+            console.log(`🌐 [${socketId}] STUN reflexive candidate found`);
+          } else if (c.type === 'host') {
+            console.log(`🏠 [${socketId}] HOST (local) candidate found`);
+          }
         } else {
           console.log(`[${socketId}] ICE gathering completed`);
         }
