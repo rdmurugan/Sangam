@@ -8,11 +8,33 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
     if (!video || !stream) return;
 
     console.log(`[VideoPlayer ${userName}] Attaching stream:`, stream.id);
+    console.log(`[VideoPlayer ${userName}] Tracks:`, stream.getTracks().map(t => ({
+      kind: t.kind,
+      enabled: t.enabled,
+      muted: t.muted,
+      readyState: t.readyState
+    })));
 
     // Direct assignment - let browser handle it
     video.srcObject = stream;
 
+    // Monitor video element state
+    const checkVideo = setInterval(() => {
+      if (video.videoWidth > 0 && video.videoHeight > 0) {
+        console.log(`✅ [VideoPlayer ${userName}] Video is rendering! ${video.videoWidth}x${video.videoHeight}`);
+        clearInterval(checkVideo);
+      }
+    }, 500);
+
+    setTimeout(() => {
+      clearInterval(checkVideo);
+      if (video.videoWidth === 0) {
+        console.error(`❌ [VideoPlayer ${userName}] Video NOT rendering after 5s. readyState: ${video.readyState}, paused: ${video.paused}, muted: ${video.muted}`);
+      }
+    }, 5000);
+
     return () => {
+      clearInterval(checkVideo);
       if (video.srcObject) {
         video.srcObject = null;
       }
