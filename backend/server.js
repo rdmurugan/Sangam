@@ -131,12 +131,16 @@ io.on('connection', (socket) => {
 
   // Join room
   socket.on('join-room', ({ roomId, userName, isHost }) => {
+    console.log(`📥 User ${userName} (${socket.id}) attempting to join room: ${roomId}`);
     const room = rooms.get(roomId);
 
     if (!room) {
+      console.log(`❌ Room not found: ${roomId}`);
       socket.emit('error', { message: 'Room not found' });
       return;
     }
+
+    console.log(`✅ Room found: ${roomId}, Current participants: ${room.participants.length}`);
 
     // Check if user is already in the room (reconnection scenario)
     const existingParticipant = room.participants.find(p => p.socketId === socket.id);
@@ -174,15 +178,20 @@ io.on('connection', (socket) => {
     };
 
     room.participants.push(participant);
+    console.log(`👥 Participant added. Total participants: ${room.participants.length}`);
 
     // Notify other participants
     socket.to(roomId).emit('user-joined', participant);
+    console.log(`📤 Emitted 'user-joined' to room ${roomId}`);
 
     // Send current participants to new user
-    socket.emit('room-participants', room.participants.filter(p => p.socketId !== socket.id));
+    const otherParticipants = room.participants.filter(p => p.socketId !== socket.id);
+    socket.emit('room-participants', otherParticipants);
+    console.log(`📤 Sent ${otherParticipants.length} existing participants to ${socket.id}`);
 
     // Send room info to user
     socket.emit('room-info', { name: room.name, id: roomId });
+    console.log(`📤 Sent room-info to ${socket.id}`);
   });
 
   // Admit user from waiting room
