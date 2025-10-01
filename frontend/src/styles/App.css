@@ -306,6 +306,8 @@ button, input, select, textarea {
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   transition: all 0.3s ease;
   animation: fadeIn 0.5s ease-out;
+  min-height: 220px;
+  min-width: 320px;
 }
 
 @keyframes fadeIn {

@@ -9,6 +9,15 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       const videoTracks = stream.getVideoTracks();
       const audioTracks = stream.getAudioTracks();
 
+      console.log(`[VideoPlayer ${userName}] Stream:`, stream.id, 'Video tracks:', videoTracks.length, 'Audio tracks:', audioTracks.length);
+      console.log(`[VideoPlayer ${userName}] Tracks state:`, [...videoTracks, ...audioTracks].map(t => ({
+        kind: t.kind,
+        id: t.id,
+        enabled: t.enabled,
+        readyState: t.readyState,
+        muted: t.muted
+      })));
+
       if (videoTracks.length === 0 && audioTracks.length === 0) {
         console.error('Stream has no tracks for:', userName);
         return;
@@ -21,21 +30,34 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         return;
       }
 
-      console.log('Setting stream for:', userName, 'Video tracks:', videoTracks.length, 'Audio tracks:', audioTracks.length);
+      console.log(`[VideoPlayer ${userName}] Setting srcObject on video element`);
       videoRef.current.srcObject = stream;
+
+      // Log video element properties
+      console.log(`[VideoPlayer ${userName}] Video element:`, {
+        videoWidth: videoRef.current.videoWidth,
+        videoHeight: videoRef.current.videoHeight,
+        readyState: videoRef.current.readyState,
+        paused: videoRef.current.paused
+      });
 
       // Important for mobile: ensure video plays
       const playPromise = videoRef.current.play();
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
-            console.log('Video playing successfully for:', userName);
+            console.log(`✅ [VideoPlayer ${userName}] Video playing successfully`);
+            console.log(`[VideoPlayer ${userName}] After play - dimensions:`, {
+              videoWidth: videoRef.current.videoWidth,
+              videoHeight: videoRef.current.videoHeight
+            });
           })
           .catch(error => {
-            console.error('Error playing video for', userName, ':', error);
+            console.error(`❌ [VideoPlayer ${userName}] Error playing video:`, error.name, error.message);
             // Try again after user interaction on mobile
             if (!muted) {
               setTimeout(() => {
+                console.log(`[VideoPlayer ${userName}] Retrying play...`);
                 videoRef.current?.play().catch(e => console.error('Retry failed:', e));
               }, 1000);
             }
@@ -46,6 +68,7 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
     // Cleanup on unmount
     return () => {
       if (videoRef.current) {
+        console.log(`[VideoPlayer ${userName}] Cleaning up - removing srcObject`);
         videoRef.current.srcObject = null;
       }
     };
