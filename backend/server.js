@@ -260,6 +260,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('ice-candidate', ({ to, candidate }) => {
+    console.log('🧊 ICE candidate relay:', socket.id, '->', to, 'Type:', candidate?.candidate?.type || candidate?.type);
     socket.to(to).emit('ice-candidate', {
       from: socket.id,
       candidate
