@@ -90,6 +90,17 @@ router.post('/login', authLimiter, validateLogin, async (req, res) => {
   }
 });
 
+// Debug endpoint to check OAuth config
+router.get('/google/debug', (req, res) => {
+  res.json({
+    clientId: process.env.GOOGLE_CLIENT_ID ? 'Set (hidden)' : 'NOT SET',
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET ? 'Set (hidden)' : 'NOT SET',
+    backendUrl: process.env.BACKEND_URL || 'NOT SET',
+    callbackUrl: `${process.env.BACKEND_URL || 'http://localhost:5001'}/api/auth/google/callback`,
+    frontendUrl: process.env.FRONTEND_URL || 'NOT SET'
+  });
+});
+
 // Google OAuth
 router.get('/google', (req, res, next) => {
   // Check if Google OAuth is configured
