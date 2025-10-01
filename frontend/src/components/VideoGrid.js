@@ -98,13 +98,18 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       console.log(`[VideoPlayer ${userName}] Attempting immediate play...`);
       const immediatePlayPromise = videoRef.current.play();
       if (immediatePlayPromise !== undefined) {
-        immediatePlayPromise
+        Promise.race([
+          immediatePlayPromise,
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error('Immediate play() timeout after 2s')), 2000)
+          )
+        ])
           .then(() => {
             console.log(`✅ [VideoPlayer ${userName}] IMMEDIATE play successful!`);
             metadataLoaded = true; // Prevent other attempts
           })
           .catch(error => {
-            console.log(`[VideoPlayer ${userName}] Immediate play failed (expected):`, error.name);
+            console.log(`[VideoPlayer ${userName}] Immediate play failed:`, error.name, error.message);
           });
       }
 
@@ -125,20 +130,38 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
           console.log(`[VideoPlayer ${userName}] play() returned:`, playPromise);
 
           if (playPromise !== undefined) {
-            playPromise
+            // Add timeout to detect hanging promise
+            Promise.race([
+              playPromise,
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('play() timeout after 3s')), 3000)
+              )
+            ])
               .then(() => {
                 console.log(`✅ [VideoPlayer ${userName}] Video playing successfully (fallback)`);
                 console.log(`[VideoPlayer ${userName}] Dimensions:`, {
-                  videoWidth: videoRef.current.videoWidth,
-                  videoHeight: videoRef.current.videoHeight,
-                  readyState: videoRef.current.readyState,
-                  paused: videoRef.current.paused
+                  videoWidth: videoRef.current?.videoWidth,
+                  videoHeight: videoRef.current?.videoHeight,
+                  readyState: videoRef.current?.readyState,
+                  paused: videoRef.current?.paused
                 });
               })
               .catch(error => {
                 console.error(`❌ [VideoPlayer ${userName}] Error playing video (fallback):`, error);
                 console.error(`[VideoPlayer ${userName}] Error name:`, error.name);
                 console.error(`[VideoPlayer ${userName}] Error message:`, error.message);
+
+                // Log video element state when play fails
+                if (videoRef.current) {
+                  console.error(`[VideoPlayer ${userName}] Video state on error:`, {
+                    srcObject: !!videoRef.current.srcObject,
+                    readyState: videoRef.current.readyState,
+                    networkState: videoRef.current.networkState,
+                    paused: videoRef.current.paused,
+                    videoWidth: videoRef.current.videoWidth,
+                    videoHeight: videoRef.current.videoHeight
+                  });
+                }
               });
           } else {
             console.warn(`[VideoPlayer ${userName}] play() returned undefined!`);
