@@ -977,6 +977,11 @@ button, input, select, textarea {
   font-size: 18px;
 }
 
+/* Panel Backdrop for Mobile */
+.panel-backdrop {
+  display: none;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .home-content {
@@ -990,6 +995,18 @@ button, input, select, textarea {
   .video-grid {
     grid-template-columns: 1fr;
     padding: 16px;
+  }
+
+  .panel-backdrop {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 199;
+    backdrop-filter: blur(4px);
   }
 
   .chat-container,
@@ -1013,6 +1030,20 @@ button, input, select, textarea {
     width: 50px;
     height: 50px;
     font-size: 20px;
+  }
+
+  .close-panel-button {
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(0, 0, 0, 0.1);
+  }
+
+  .close-panel-button:hover,
+  .close-panel-button:active {
+    background: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
   }
 }
 

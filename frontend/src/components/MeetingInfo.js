@@ -16,13 +16,15 @@ const MeetingInfo = ({ roomId, roomName, participantCount, onClose }) => {
   };
 
   return (
-    <div className="meeting-info-container">
-      <div className="meeting-info-header">
-        <h3>Meeting Information</h3>
-        <button className="close-panel-button" onClick={onClose} title="Close">
-          ✕
-        </button>
-      </div>
+    <>
+      <div className="panel-backdrop" onClick={onClose}></div>
+      <div className="meeting-info-container">
+        <div className="meeting-info-header">
+          <h3>Meeting Information</h3>
+          <button className="close-panel-button" onClick={onClose} title="Close">
+            ✕
+          </button>
+        </div>
 
       <div className="meeting-info-content">
         <div className="info-section">
@@ -94,7 +96,8 @@ const MeetingInfo = ({ roomId, roomName, participantCount, onClose }) => {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 
