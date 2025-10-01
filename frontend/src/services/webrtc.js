@@ -183,6 +183,17 @@ class WebRTCService {
         console.log(`🟡 [${socketId}] Connection state:`, pc.connectionState);
       });
 
+      // Force check ICE state after 3 seconds
+      setTimeout(() => {
+        console.log(`⏱️ [${socketId}] ICE state after 3s:`, pc.iceConnectionState);
+        console.log(`⏱️ [${socketId}] Connection state after 3s:`, pc.connectionState);
+        console.log(`⏱️ [${socketId}] Signaling state after 3s:`, pc.signalingState);
+
+        if (pc.iceConnectionState === 'new' || pc.iceConnectionState === 'checking') {
+          console.error(`❌ [${socketId}] ICE STUCK! Still in '${pc.iceConnectionState}' state. Connection likely blocked.`);
+        }
+      }, 3000);
+
       // Log ALL ICE candidates with details
       pc.onicecandidate = (event) => {
         if (event.candidate) {
