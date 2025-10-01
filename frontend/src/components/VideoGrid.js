@@ -21,6 +21,22 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       label: t.label
     })));
 
+    // Check if tracks are active
+    const videoTrack = stream.getVideoTracks()[0];
+    const audioTrack = stream.getAudioTracks()[0];
+    console.log(`[VideoPlayer ${userName}] Video track:`, videoTrack ? {
+      id: videoTrack.id,
+      enabled: videoTrack.enabled,
+      muted: videoTrack.muted,
+      readyState: videoTrack.readyState
+    } : 'NO VIDEO TRACK');
+    console.log(`[VideoPlayer ${userName}] Audio track:`, audioTrack ? {
+      id: audioTrack.id,
+      enabled: audioTrack.enabled,
+      muted: audioTrack.muted,
+      readyState: audioTrack.readyState
+    } : 'NO AUDIO TRACK');
+
     // Set srcObject
     videoElement.srcObject = stream;
     console.log(`[VideoPlayer ${userName}] srcObject assigned, attempting play...`);
@@ -34,8 +50,16 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       console.log(`[VideoPlayer ${userName}] Data loaded, ready to play`);
     };
 
+    const handleCanPlay = () => {
+      console.log(`[VideoPlayer ${userName}] Can play - readyState: ${videoElement.readyState}`);
+    };
+
     videoElement.addEventListener('loadedmetadata', handleLoadedMetadata);
     videoElement.addEventListener('loadeddata', handleLoadedData);
+    videoElement.addEventListener('canplay', handleCanPlay);
+
+    // Force load
+    videoElement.load();
 
     // Immediately try to play
     const playPromise = videoElement.play();
@@ -59,6 +83,7 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
       console.log(`[VideoPlayer ${userName}] Cleaning up`);
       videoElement.removeEventListener('loadedmetadata', handleLoadedMetadata);
       videoElement.removeEventListener('loadeddata', handleLoadedData);
+      videoElement.removeEventListener('canplay', handleCanPlay);
       if (videoElement.srcObject) {
         videoElement.srcObject = null;
       }
