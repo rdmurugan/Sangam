@@ -1,7 +1,7 @@
 .connection-indicator {
   position: fixed;
   top: 20px;
-  right: 20px;
+  left: 20px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -34,11 +34,12 @@
   }
 }
 
-/* Move to left on mobile to avoid overlapping with panels */
+/* Ensure it stays on left on mobile */
 @media (max-width: 768px) {
   .connection-indicator {
-    top: 20px;
-    left: 20px;
-    right: auto;
+    top: 10px;
+    left: 10px;
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }

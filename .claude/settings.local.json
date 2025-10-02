@@ -6,9 +6,24 @@
       "Bash(git push:*)",
       "WebSearch",
       "Bash(node:*)",
-      "WebFetch(domain:sangamam.onrender.com)"
+      "WebFetch(domain:sangamam.onrender.com)",
+      "Bash(git reset:*)",
+      "Bash(git checkout:*)",
+      "Bash(git restore:*)",
+      "WebFetch(domain:sangami.netlify.app)",
+      "Bash(npm start)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)",
+      "Bash(curl -v http://localhost:5001/api/room/create -X POST -H \"Content-Type: application/json\" -d '{\"\"hostName\"\":\"\"Test\"\",\"\"roomName\"\":\"\"Test Room\"\"}')",
+      "Bash(curl -v http://localhost:5001/api/room/create -X POST -H \"Content-Type: application/json\" -H \"Origin: http://localhost:3000\" -d '{\"\"hostName\"\":\"\"Test\"\",\"\"roomName\"\":\"\"Test Room\"\"}')",
+      "Bash(npm install:*)",
+      "Bash(awk:*)"
     ],
     "deny": [],
     "ask": []
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "echo ''"
   }
 }

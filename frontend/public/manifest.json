@@ -1,0 +1,55 @@
+{
+  "short_name": "Sangam",
+  "name": "Sangam - Video Conferencing Platform",
+  "description": "Professional video conferencing with AI-powered features, breakout rooms, live translation, and more",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#4a90e2",
+  "background_color": "#1a1a1a",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["productivity", "business", "communication"],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Create Meeting",
+      "short_name": "New Meeting",
+      "description": "Start a new video meeting",
+      "url": "/create",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Join Meeting",
+      "short_name": "Join",
+      "description": "Join an existing meeting",
+      "url": "/join",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false
+}

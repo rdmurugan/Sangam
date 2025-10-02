@@ -1,0 +1,458 @@
+/* Breakout Rooms Container */
+.breakout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #1a1a1a;
+}
+
+.breakout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #333;
+  background: #1a1a1a;
+}
+
+.breakout-header h3 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.breakout-header h3 svg {
+  color: #4a90e2;
+}
+
+.create-breakout-btn {
+  background: #4a90e2;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+
+.create-breakout-btn:hover {
+  background: #357abd;
+  transform: scale(1.05);
+}
+
+.create-breakout-btn:active {
+  transform: scale(0.95);
+}
+
+/* Timer Display */
+.breakout-timer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: #2a3a4a;
+  border-bottom: 1px solid #333;
+  color: #4a90e2;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.breakout-timer svg {
+  color: #4a90e2;
+}
+
+.timer-text {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Create Breakout Form */
+.breakout-create-form {
+  padding: 16px 20px;
+  background: #222;
+  border-bottom: 1px solid #333;
+  animation: slideDown 0.3s ease-out;
+}
+
+.breakout-create-form h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.breakout-create-form .form-group {
+  margin-bottom: 16px;
+}
+
+.breakout-create-form .form-group:last-of-type {
+  margin-bottom: 0;
+}
+
+.breakout-create-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.breakout-input,
+.breakout-select {
+  width: 100%;
+  padding: 8px 10px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  transition: all 0.2s;
+}
+
+.breakout-input:focus,
+.breakout-select:focus {
+  outline: none;
+  border-color: #4a90e2;
+  background: #333;
+}
+
+.breakout-select {
+  cursor: pointer;
+}
+
+.create-breakout-submit {
+  width: 100%;
+  padding: 10px 16px;
+  background: #4a90e2;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-top: 16px;
+}
+
+.create-breakout-submit:hover {
+  background: #357abd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+}
+
+.create-breakout-submit:active {
+  transform: translateY(0);
+}
+
+/* My Assignment (Participant View) */
+.my-breakout-assignment {
+  padding: 20px;
+  background: #1a1a1a;
+}
+
+.my-breakout-assignment h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.assigned-room-card {
+  background: #2a3a4a;
+  border: 1px solid #4a90e2;
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  animation: slideInCard 0.4s ease-out;
+}
+
+@keyframes slideInCard {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.room-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.participants-count {
+  font-size: 12px;
+  color: #999;
+}
+
+.join-breakout-btn {
+  background: #4a90e2;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 20px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.join-breakout-btn:hover {
+  background: #357abd;
+  transform: scale(1.05);
+}
+
+/* Host View - Breakout List */
+.breakout-list {
+  padding: 20px;
+  background: #1a1a1a;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.breakout-list h4 {
+  margin: 0 0 16px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #ccc;
+}
+
+.breakout-room-card {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  transition: all 0.3s;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.breakout-room-card:hover {
+  border-color: #4a90e2;
+  background: #2a2a2a;
+  transform: translateX(4px);
+}
+
+.breakout-room-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.breakout-room-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.breakout-participants-count {
+  font-size: 12px;
+  color: #999;
+}
+
+.host-join-btn {
+  background: transparent;
+  border: 1px solid #4a90e2;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: #4a90e2;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.host-join-btn:hover {
+  background: #4a90e2;
+  color: #fff;
+  transform: scale(1.05);
+}
+
+.close-breakout-btn {
+  width: 100%;
+  padding: 12px;
+  background: #444;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 16px;
+}
+
+.close-breakout-btn:hover {
+  background: #555;
+  transform: translateY(-1px);
+}
+
+/* In Breakout Room Status */
+.in-breakout-room {
+  padding: 20px;
+  background: #1a1a1a;
+}
+
+.breakout-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: #2a3a4a;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  color: #4a90e2;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.status-indicator {
+  width: 10px;
+  height: 10px;
+  background: #4a90e2;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+.return-main-btn {
+  width: 100%;
+  padding: 12px;
+  background: #4a90e2;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.return-main-btn:hover {
+  background: #357abd;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+}
+
+.return-main-btn:active {
+  transform: translateY(0);
+}
+
+/* Empty State */
+.breakout-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #666;
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.breakout-empty svg {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.breakout-empty p {
+  margin: 8px 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: #888;
+}
+
+.breakout-empty-hint {
+  font-size: 13px !important;
+  color: #666 !important;
+  margin-top: 4px !important;
+  font-weight: 400 !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+    padding-top: 16px;
+    padding-bottom: 16px;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .breakout-header {
+    padding: 12px 16px;
+  }
+
+  .breakout-create-form,
+  .my-breakout-assignment,
+  .breakout-list,
+  .in-breakout-room {
+    padding: 16px;
+  }
+
+  .assigned-room-card,
+  .breakout-room-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .join-breakout-btn,
+  .host-join-btn {
+    width: 100%;
+  }
+}

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import MeetingConfig from './MeetingConfig';
 
 const Home = () => {
   const [userName, setUserName] = useState('');
   const [roomId, setRoomId] = useState('');
+  const [roomPassword, setRoomPassword] = useState('');
   const [nameError, setNameError] = useState('');
+  const [showMeetingConfig, setShowMeetingConfig] = useState(false);
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
@@ -67,39 +70,11 @@ const Home = () => {
     return true;
   };
 
-  const createRoom = async () => {
+  const createRoom = () => {
     if (!validateName(userName)) {
       return;
     }
-
-    try{
-      const API_URL = process.env.REACT_APP_SOCKET_URL || 'http://localhost:5001';
-
-      const response = await fetch(`${API_URL}/api/room/create`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ hostName: userName })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.errors) {
-        const errorMessages = data.errors.map(e => e.msg).join('\n');
-        alert(`Validation error:\n${errorMessages}`);
-        return;
-      }
-
-      sessionStorage.setItem('userName', userName);
-      sessionStorage.setItem('isHost', 'true');
-      navigate(`/room/${data.roomId}`);
-    } catch (error) {
-      console.error('Error creating room:', error);
-      alert(`Failed to create room: ${error.message}`);
-    }
+    setShowMeetingConfig(true);
   };
 
   const handleGoogleLogin = () => {
@@ -133,6 +108,31 @@ const Home = () => {
       }
 
       const roomData = await response.json();
+
+      // Check if room requires password
+      if (roomData.requiresPassword) {
+        const enteredPassword = roomPassword || prompt('This room is password protected. Please enter the password:');
+        if (!enteredPassword) {
+          return;
+        }
+
+        // Validate password
+        const validateResponse = await fetch(`${API_URL}/api/room/${roomId.trim()}/validate-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ password: enteredPassword })
+        });
+
+        const validateData = await validateResponse.json();
+
+        if (!validateData.valid) {
+          alert('Incorrect password. Please try again.');
+          setRoomPassword('');
+          return;
+        }
+
+        sessionStorage.setItem('roomPassword', enteredPassword);
+      }
 
       sessionStorage.setItem('userName', userName);
       sessionStorage.setItem('isHost', 'false');
@@ -222,6 +222,13 @@ const Home = () => {
             Join Meeting
           </button>
         </div>
+
+        {showMeetingConfig && (
+          <MeetingConfig
+            userName={userName}
+            onClose={() => setShowMeetingConfig(false)}
+          />
+        )}
       </div>
     </div>
   );

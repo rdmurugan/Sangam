@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { ReactionOverlay } from './Reactions';
 
-const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
+const VideoPlayer = ({ stream, muted = false, userName, isLocal = false, reactions = [], isActiveSpeaker = false }) => {
   const videoRef = useRef(null);
 
   useEffect(() => {
@@ -56,7 +57,7 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
   };
 
   return (
-    <div className="video-container" onClick={handleClick} style={{ cursor: 'pointer', position: 'relative' }}>
+    <div className={`video-container ${isActiveSpeaker ? 'active-speaker' : ''}`} onClick={handleClick} style={{ cursor: 'pointer', position: 'relative' }}>
       <video
         ref={videoRef}
         autoPlay
@@ -73,11 +74,25 @@ const VideoPlayer = ({ stream, muted = false, userName, isLocal = false }) => {
         }}
       />
       <div className="video-label">{userName}</div>
+      {reactions.length > 0 && <ReactionOverlay reactions={reactions} />}
+      {isActiveSpeaker && (
+        <div className="speaking-indicator">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+        </div>
+      )}
     </div>
   );
 };
 
-const VideoGrid = ({ localStream, peers, localUserName }) => {
+const VideoGrid = ({ localStream, peers, localUserName, isFloating = false, reactions = new Map(), localSocketId, activeSpeaker }) => {
+  const [position, setPosition] = useState({ x: 20, y: 20 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const gridRef = useRef(null);
+
   console.log('VideoGrid rendering - peers count:', peers.size);
   console.log('VideoGrid peers:', Array.from(peers.entries()).map(([id, data]) => ({
     id,
@@ -87,14 +102,71 @@ const VideoGrid = ({ localStream, peers, localUserName }) => {
     trackCount: data.stream?.getTracks().length
   })));
 
+  const handleMouseDown = (e) => {
+    if (!isFloating) return;
+
+    setIsDragging(true);
+    setDragOffset({
+      x: e.clientX - position.x,
+      y: e.clientY - position.y
+    });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || !isFloating) return;
+
+    setPosition({
+      x: e.clientX - dragOffset.x,
+      y: e.clientY - dragOffset.y
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (isDragging) {
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        window.removeEventListener('mousemove', handleMouseMove);
+        window.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isDragging]);
+
+  const gridStyle = isFloating ? {
+    position: 'fixed',
+    top: `${position.y}px`,
+    left: `${position.x}px`,
+    width: '320px',
+    maxHeight: '400px',
+    zIndex: 1000,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    borderRadius: '12px',
+    padding: '10px',
+    boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4)',
+    cursor: isDragging ? 'grabbing' : 'grab',
+    overflow: 'auto'
+  } : {};
+
   return (
-    <div className="video-grid">
+    <div
+      ref={gridRef}
+      className={`video-grid ${isFloating ? 'video-grid-floating' : ''}`}
+      style={gridStyle}
+      onMouseDown={handleMouseDown}
+    >
       {localStream && (
         <VideoPlayer
           stream={localStream}
           muted={true}
           userName={localUserName + ' (You)'}
           isLocal={true}
+          reactions={reactions.get(localSocketId) || []}
+          isActiveSpeaker={activeSpeaker === localSocketId}
         />
       )}
       {Array.from(peers.entries())
@@ -113,6 +185,8 @@ const VideoGrid = ({ localStream, peers, localUserName }) => {
               stream={peerData.stream}
               userName={peerData.userName}
               muted={false}
+              reactions={reactions.get(socketId) || []}
+              isActiveSpeaker={activeSpeaker === socketId}
             />
           );
         })}
