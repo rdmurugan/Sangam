@@ -79,6 +79,12 @@ const SettingsIcon = () => (
   </svg>
 );
 
+const AnalyticsIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+  </svg>
+);
+
 const Controls = ({
   onToggleAudio,
   onToggleVideo,
@@ -90,6 +96,7 @@ const Controls = ({
   onToggleWaitingRoom,
   onToggleMeetingInfo,
   onToggleSettings,
+  onToggleAnalytics,
   onReact,
   isScreenSharing,
   isSidebarOpen,
@@ -194,6 +201,15 @@ const Controls = ({
         >
           <SettingsIcon />
           <span className="control-label">Settings</span>
+        </button>
+
+        <button
+          className="control-button"
+          onClick={onToggleAnalytics}
+          title="Meeting Analytics"
+        >
+          <AnalyticsIcon />
+          <span className="control-label">Analytics</span>
         </button>
 
         {isHost && (

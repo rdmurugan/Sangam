@@ -17,7 +17,9 @@
       "Bash(curl -v http://localhost:5001/api/room/create -X POST -H \"Content-Type: application/json\" -d '{\"\"hostName\"\":\"\"Test\"\",\"\"roomName\"\":\"\"Test Room\"\"}')",
       "Bash(curl -v http://localhost:5001/api/room/create -X POST -H \"Content-Type: application/json\" -H \"Origin: http://localhost:3000\" -d '{\"\"hostName\"\":\"\"Test\"\",\"\"roomName\"\":\"\"Test Room\"\"}')",
       "Bash(npm install:*)",
-      "Bash(awk:*)"
+      "Bash(awk:*)",
+      "Bash(git config:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

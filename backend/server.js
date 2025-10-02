@@ -13,6 +13,7 @@ const connectDB = require('./config/database');
 const authRoutes = require('./routes/auth');
 const aiService = require('./services/aiService');
 const securityService = require('./services/securityService');
+const analyticsService = require('./services/analyticsService');
 
 const app = express();
 const server = http.createServer(app);
@@ -59,6 +60,10 @@ app.use('/api/auth', authRoutes);
 // TURN server credentials
 const turnRoutes = require('./routes/turn');
 app.use('/api/turn', turnRoutes);
+
+// License management routes
+const licenseRoutes = require('./routes/license');
+app.use('/api/license', licenseRoutes);
 
 // Store active rooms and participants
 const rooms = new Map();
@@ -134,6 +139,13 @@ app.post('/api/room/create', roomCreationLimiter, validateRoomName, (req, res) =
     roomName,
     complianceMode: complianceMode || 'STANDARD',
     timestamp: Date.now()
+  });
+
+  // Initialize analytics for the meeting
+  analyticsService.initializeMeeting(roomId, {
+    scheduledStartTime: scheduledTime,
+    hostName,
+    title: roomName
   });
 
   res.json({ roomId, message: 'Room created successfully' });
@@ -271,6 +283,12 @@ io.on('connection', (socket) => {
       timestamp: Date.now()
     });
 
+    // Track analytics - participant join
+    analyticsService.recordParticipantJoin(roomId, socket.id, {
+      userId: socket.id,
+      userName
+    });
+
     // Notify other participants
     socket.to(roomId).emit('user-joined', participant);
     console.log(`📤 Emitted 'user-joined' to room ${roomId}`);
@@ -387,6 +405,9 @@ io.on('connection', (socket) => {
       if (participant) {
         participant.isScreenSharing = true;
         io.to(roomId).emit('user-screen-sharing', { socketId: socket.id, isSharing: true });
+
+        // Track analytics - screen share started
+        analyticsService.recordScreenShare(roomId, socket.id, 'start');
       }
     }
   });
@@ -398,6 +419,9 @@ io.on('connection', (socket) => {
       if (participant) {
         participant.isScreenSharing = false;
         io.to(roomId).emit('user-screen-sharing', { socketId: socket.id, isSharing: false });
+
+        // Track analytics - screen share stopped
+        analyticsService.recordScreenShare(roomId, socket.id, 'stop');
       }
     }
   });
@@ -410,6 +434,16 @@ io.on('connection', (socket) => {
       if (participant) {
         participant.audioEnabled = enabled;
         io.to(roomId).emit('user-audio-toggled', { socketId: socket.id, enabled });
+
+        // Track analytics - audio state change
+        analyticsService.recordMediaStateChange(roomId, socket.id, 'audio', enabled);
+
+        // Track talk time
+        if (enabled) {
+          analyticsService.startSpeaking(roomId, socket.id, participant.userName);
+        } else {
+          analyticsService.stopSpeaking(roomId, socket.id);
+        }
       }
     }
   });
@@ -421,6 +455,9 @@ io.on('connection', (socket) => {
       if (participant) {
         participant.videoEnabled = enabled;
         io.to(roomId).emit('user-video-toggled', { socketId: socket.id, enabled });
+
+        // Track analytics - video state change
+        analyticsService.recordMediaStateChange(roomId, socket.id, 'video', enabled);
       }
     }
   });
@@ -451,6 +488,11 @@ io.on('connection', (socket) => {
       userName,
       socketId: socket.id,
       timestamp: Date.now()
+    });
+
+    // Track analytics - chat message
+    analyticsService.recordChatMessage(roomId, socket.id, {
+      text: filteredMessage
     });
   });
 
@@ -630,6 +672,9 @@ io.on('connection', (socket) => {
       socketId: socket.id,
       reaction
     });
+
+    // Track analytics - reaction
+    analyticsService.recordReaction(roomId, socket.id, reaction);
   });
 
   // Whiteboard drawing
@@ -939,6 +984,10 @@ io.on('connection', (socket) => {
     console.log(`📤 Host ending meeting for room: ${roomId}`);
     const room = rooms.get(roomId);
     if (room) {
+      // End analytics tracking for the meeting
+      const finalAnalytics = analyticsService.endMeeting(roomId);
+      console.log(`📊 Meeting analytics finalized. Health Score: ${finalAnalytics?.healthScore || 'N/A'}`);
+
       // Notify all participants that meeting has ended
       io.to(roomId).emit('meeting-ended');
 
@@ -1421,6 +1470,77 @@ io.on('connection', (socket) => {
     console.log(`📋 Compliance mode set to ${mode} in room ${roomId}`);
   });
 
+  // ====================================
+  // ANALYTICS & INSIGHTS
+  // ====================================
+
+  // Get current meeting analytics
+  socket.on('get-meeting-analytics', ({ roomId }) => {
+    const room = rooms.get(roomId);
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    const analytics = analyticsService.getMeetingAnalytics(roomId);
+    if (analytics) {
+      socket.emit('meeting-analytics', analytics);
+    } else {
+      socket.emit('error', { message: 'Analytics not available for this meeting' });
+    }
+  });
+
+  // Get meeting summary
+  socket.on('get-meeting-summary', ({ roomId }) => {
+    const room = rooms.get(roomId);
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    const summary = analyticsService.generateMeetingSummary(roomId);
+    if (summary) {
+      socket.emit('meeting-summary', summary);
+    } else {
+      socket.emit('error', { message: 'Summary not available for this meeting' });
+    }
+  });
+
+  // Get all meetings analytics (host only)
+  socket.on('get-all-meetings-analytics', () => {
+    const allAnalytics = analyticsService.getAllMeetingsAnalytics();
+    socket.emit('all-meetings-analytics', allAnalytics);
+  });
+
+  // Get aggregate stats across all meetings
+  socket.on('get-aggregate-stats', () => {
+    const stats = analyticsService.generateAggregateStats();
+    socket.emit('aggregate-stats', stats);
+  });
+
+  // Get talk time distribution
+  socket.on('get-talk-time-distribution', ({ roomId }) => {
+    const room = rooms.get(roomId);
+    if (!room) {
+      socket.emit('error', { message: 'Room not found' });
+      return;
+    }
+
+    const talkTimeData = analyticsService.getTalkTimeDistribution(roomId);
+    if (talkTimeData) {
+      socket.emit('talk-time-distribution', talkTimeData);
+    }
+  });
+
+  // Manually record speaking activity (for WebRTC voice activity detection)
+  socket.on('speaking-started', ({ roomId, userName }) => {
+    analyticsService.startSpeaking(roomId, socket.id, userName);
+  });
+
+  socket.on('speaking-stopped', ({ roomId }) => {
+    analyticsService.stopSpeaking(roomId, socket.id);
+  });
+
   // Disconnect
   socket.on('disconnect', () => {
     console.log('Client disconnected:', socket.id);
@@ -1431,6 +1551,9 @@ io.on('connection', (socket) => {
       if (index !== -1) {
         const leavingParticipant = room.participants[index];
         const wasHost = leavingParticipant.isHost;
+
+        // Track analytics - participant leave
+        analyticsService.recordParticipantLeave(roomId, socket.id);
 
         room.participants.splice(index, 1);
         io.to(roomId).emit('user-left', { socketId: socket.id });

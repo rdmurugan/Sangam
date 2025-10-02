@@ -15,6 +15,7 @@ import MeetingInfo from './MeetingInfo';
 import JoinPrompt from './JoinPrompt';
 import DeviceSettings from './DeviceSettings';
 import ScreenShareView from './ScreenShareView';
+import MeetingAnalytics from './MeetingAnalytics';
 
 const Room = () => {
   const { roomId } = useParams();
@@ -30,6 +31,7 @@ const Room = () => {
   const [showWaitingRoom, setShowWaitingRoom] = useState(false);
   const [showMeetingInfo, setShowMeetingInfo] = useState(false);
   const [showDeviceSettings, setShowDeviceSettings] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
   const [waitingUsers, setWaitingUsers] = useState([]);
   const [roomName, setRoomName] = useState('Sangam Meeting');
   const [isScreenSharing, setIsScreenSharing] = useState(false);
@@ -918,6 +920,7 @@ const Room = () => {
         onToggleMeetingInfo={() => setShowMeetingInfo(!showMeetingInfo)}
         onToggleSettings={() => setShowDeviceSettings(!showDeviceSettings)}
         onToggleWaitingRoom={() => setShowWaitingRoom(!showWaitingRoom)}
+        onToggleAnalytics={() => setShowAnalytics(!showAnalytics)}
         onReact={handleReact}
         isScreenSharing={isScreenSharing}
         isSidebarOpen={showSidebar}
@@ -931,6 +934,14 @@ const Room = () => {
           onClose={() => setShowDeviceSettings(false)}
           onDeviceChange={handleDeviceChange}
           currentStream={localStream}
+        />
+      )}
+
+      {showAnalytics && (
+        <MeetingAnalytics
+          socket={socketRef.current}
+          roomId={roomId}
+          onClose={() => setShowAnalytics(false)}
         />
       )}
     </div>

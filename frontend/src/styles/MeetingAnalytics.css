@@ -1,0 +1,802 @@
+/* Meeting Analytics Overlay */
+.analytics-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Analytics Modal */
+.analytics-modal {
+  background: #1a1a1a;
+  border-radius: 12px;
+  width: 95%;
+  max-width: 1400px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #333;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Header */
+.analytics-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #333;
+}
+
+.analytics-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.meeting-title {
+  font-size: 14px;
+  color: #999;
+  font-weight: normal;
+  margin-left: 10px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.refresh-btn {
+  padding: 8px 16px;
+  background: #333;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.refresh-btn:hover {
+  background: #444;
+}
+
+.refresh-btn.active {
+  background: #4a90e2;
+  border-color: #4a90e2;
+}
+
+.close-btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: #999;
+  font-size: 28px;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #333;
+  color: #fff;
+}
+
+/* Tabs */
+.analytics-tabs {
+  display: flex;
+  background: #222;
+  border-bottom: 1px solid #333;
+  overflow-x: auto;
+}
+
+.analytics-tabs::-webkit-scrollbar {
+  height: 3px;
+}
+
+.analytics-tab {
+  flex: 1;
+  padding: 14px 20px;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #999;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.analytics-tab:hover {
+  color: #fff;
+  background: rgba(74, 144, 226, 0.05);
+}
+
+.analytics-tab.active {
+  color: #4a90e2;
+  border-bottom-color: #4a90e2;
+  background: rgba(74, 144, 226, 0.1);
+}
+
+/* Content */
+.analytics-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.analytics-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.analytics-content::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+.analytics-content::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 3px;
+}
+
+/* Cards */
+.analytics-card {
+  background: #222;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  border: 1px solid #333;
+}
+
+.analytics-card h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Health Score Card */
+.health-score-badge {
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.health-score-visual {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.health-factors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.health-factor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.factor-name {
+  flex: 0 0 150px;
+  font-size: 13px;
+  color: #999;
+  text-transform: capitalize;
+}
+
+.factor-bar {
+  flex: 1;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.factor-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.factor-score {
+  flex: 0 0 40px;
+  text-align: right;
+  font-size: 13px;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Stats Grid */
+.analytics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.stat-card {
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.stat-card:hover {
+  border-color: #4a90e2;
+  transform: translateY(-2px);
+}
+
+.stat-icon {
+  font-size: 32px;
+  margin-bottom: 10px;
+}
+
+.stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Insights Grid */
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.insight-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.insight-section ul {
+  margin: 0;
+  padding-left: 20px;
+  list-style: none;
+}
+
+.insight-section li {
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.5;
+  position: relative;
+}
+
+.insight-section li:before {
+  content: '•';
+  position: absolute;
+  left: -15px;
+  color: #4a90e2;
+}
+
+.highlights li:before {
+  color: #6a9e4a;
+}
+
+.concerns li:before {
+  color: #e8a83a;
+}
+
+.recommendations li:before {
+  color: #4a90e2;
+}
+
+/* Attendance Tab */
+.attendance-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.attendance-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: #2a2a2a;
+  border-radius: 6px;
+}
+
+.attendance-stat .stat-label {
+  color: #999;
+  font-size: 14px;
+}
+
+.attendance-stat .stat-value {
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Participants Table */
+.participants-table {
+  overflow-x: auto;
+}
+
+.participants-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.participants-table th {
+  background: #2a2a2a;
+  padding: 12px;
+  text-align: left;
+  font-size: 13px;
+  color: #999;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.participants-table td {
+  padding: 12px;
+  border-top: 1px solid #333;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 5px;
+}
+
+.status-badge.active {
+  background: rgba(106, 158, 74, 0.2);
+  color: #6a9e4a;
+}
+
+.status-badge.left {
+  background: rgba(153, 153, 153, 0.2);
+  color: #999;
+}
+
+.status-badge.late {
+  background: rgba(232, 168, 58, 0.2);
+  color: #e8a83a;
+}
+
+/* Late Arrivals List */
+.late-arrivals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.late-arrival-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  background: #2a2a2a;
+  border-radius: 6px;
+}
+
+.participant-name {
+  font-weight: 600;
+  color: #fff;
+}
+
+.late-time {
+  color: #e8a83a;
+  font-size: 13px;
+}
+
+/* Engagement Tab */
+.engagement-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.engagement-metric {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 16px;
+  background: #2a2a2a;
+  border-radius: 8px;
+}
+
+.metric-icon {
+  font-size: 32px;
+  flex-shrink: 0;
+}
+
+.metric-content {
+  flex: 1;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.metric-label {
+  font-size: 13px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metric-avg,
+.metric-subtitle {
+  font-size: 12px;
+  color: #666;
+  margin-top: 5px;
+}
+
+/* Participant Engagement List */
+.participant-engagement-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.participant-engagement-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.participant-engagement-item:hover {
+  background: #333;
+}
+
+.participant-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.rank {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4a90e2;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.engagement-breakdown {
+  display: flex;
+  gap: 15px;
+  flex: 1;
+  justify-content: center;
+}
+
+.engagement-stat {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.stat-icon {
+  font-size: 16px;
+}
+
+.engagement-total {
+  font-weight: 600;
+  color: #4a90e2;
+  font-size: 14px;
+}
+
+/* Sentiment Overview */
+.sentiment-overview {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 20px;
+}
+
+.sentiment-score {
+  text-align: center;
+}
+
+.sentiment-icon.large {
+  font-size: 80px;
+  margin-bottom: 10px;
+}
+
+.sentiment-label {
+  font-size: 20px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 5px;
+  text-transform: capitalize;
+}
+
+.sentiment-value {
+  font-size: 14px;
+  color: #999;
+}
+
+.sentiment-description {
+  flex: 1;
+}
+
+.sentiment-description p {
+  margin: 0;
+  font-size: 15px;
+  color: #ccc;
+  line-height: 1.6;
+}
+
+/* Talk Time Tab */
+.talktime-overview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.talktime-stat {
+  display: flex;
+  justify-content: space-between;
+  padding: 16px;
+  background: #2a2a2a;
+  border-radius: 6px;
+}
+
+.talktime-stat .stat-label {
+  color: #999;
+  font-size: 14px;
+}
+
+.talktime-stat .stat-value {
+  color: #fff;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+/* Dominant Speakers List */
+.dominant-speakers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.speaker-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 16px;
+  background: #2a2a2a;
+  border-radius: 8px;
+}
+
+.speaker-rank {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4a90e2;
+  border-radius: 50%;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.speaker-info {
+  flex: 0 0 150px;
+}
+
+.speaker-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.speaker-time {
+  font-size: 13px;
+  color: #999;
+}
+
+.speaker-bar {
+  flex: 1;
+  height: 10px;
+  background: #333;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.speaker-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a90e2, #6aa4e2);
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.speaker-percentage {
+  flex: 0 0 60px;
+  text-align: right;
+  font-size: 16px;
+  font-weight: 700;
+  color: #4a90e2;
+}
+
+/* Balance Visualization */
+.balance-visualization {
+  margin: 20px 0;
+}
+
+.balance-warning {
+  padding: 12px;
+  background: rgba(232, 168, 58, 0.1);
+  border-left: 3px solid #e8a83a;
+  border-radius: 4px;
+  color: #e8a83a;
+  font-size: 14px;
+  margin-top: 15px;
+}
+
+/* Loading State */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #333;
+  border-top-color: #4a90e2;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: #999;
+  font-size: 15px;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: #999;
+  font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .analytics-modal {
+    width: 100%;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+
+  .analytics-content {
+    padding: 16px;
+  }
+
+  .analytics-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .engagement-overview {
+    grid-template-columns: 1fr;
+  }
+
+  .speaker-info {
+    flex: 0 0 100px;
+  }
+
+  .speaker-percentage {
+    flex: 0 0 50px;
+  }
+
+  .participants-table {
+    font-size: 12px;
+  }
+
+  .participants-table th,
+  .participants-table td {
+    padding: 8px;
+  }
+}
