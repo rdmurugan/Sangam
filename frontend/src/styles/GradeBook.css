@@ -1,0 +1,307 @@
+/* Grade Book Styles */
+
+.gradebook {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.gradebook-message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  font-weight: 500;
+}
+
+.gradebook-message.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.gradebook-message.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.gradebook-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  gap: 1rem;
+}
+
+.assignment-selector {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.assignment-selector label {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.assignment-selector select {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.grade-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.grade-stats .stat-card {
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.grade-stats .stat-label {
+  display: block;
+  font-size: 0.875rem;
+  color: #7f8c8d;
+  margin-bottom: 0.5rem;
+}
+
+.grade-stats .stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.grade-stats .stat-letter,
+.grade-stats .stat-sublabel {
+  display: block;
+  font-size: 0.875rem;
+  color: #7f8c8d;
+  margin-top: 0.25rem;
+}
+
+.grade-distribution {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.grade-distribution h3 {
+  margin-bottom: 1rem;
+  color: #2c3e50;
+}
+
+.distribution-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.distribution-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.distribution-label {
+  min-width: 100px;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.distribution-bar {
+  flex: 1;
+  height: 24px;
+  background: #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.distribution-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3498db, #2980b9);
+  transition: width 0.5s ease;
+}
+
+.distribution-count {
+  min-width: 40px;
+  text-align: right;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.grades-table-container {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.grades-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.grades-table th {
+  text-align: left;
+  padding: 1rem;
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.grades-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.grades-table tr:hover {
+  background: #f8f9fa;
+}
+
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.student-info .avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #3498db;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.grade-input {
+  width: 80px;
+  padding: 0.5rem;
+  border: 2px solid #3498db;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.score-max {
+  color: #7f8c8d;
+  font-size: 0.875rem;
+}
+
+.percentage {
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.percentage.excellent {
+  background: #d4edda;
+  color: #155724;
+}
+
+.percentage.good {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.percentage.warning {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.letter-grade {
+  display: inline-block;
+  width: 40px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+
+.letter-grade.grade-A {
+  background: #27ae60;
+  color: white;
+}
+
+.letter-grade.grade-B {
+  background: #3498db;
+  color: white;
+}
+
+.letter-grade.grade-C {
+  background: #f39c12;
+  color: white;
+}
+
+.letter-grade.grade-D {
+  background: #e67e22;
+  color: white;
+}
+
+.letter-grade.grade-F {
+  background: #e74c3c;
+  color: white;
+}
+
+.sync-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.sync-status.synced {
+  background: #d4edda;
+  color: #155724;
+}
+
+.sync-status.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.edit-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: transform 0.2s;
+}
+
+.edit-button:hover {
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .gradebook-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .grade-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .grades-table {
+    font-size: 0.875rem;
+  }
+
+  .grades-table th,
+  .grades-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}

@@ -19,7 +19,10 @@
       "Bash(npm install:*)",
       "Bash(awk:*)",
       "Bash(git config:*)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "Bash(git filter-branch:*)",
+      "Bash(git stash push:*)",
+      "Bash(git stash:*)"
     ],
     "deny": [],
     "ask": []

@@ -31,8 +31,9 @@ const Privacy = () => {
 
       <h3>2.3 Communication Data</h3>
       <p>
-        Video, audio, and chat messages are transmitted peer-to-peer using WebRTC.
-        We do not store or record your calls unless you explicitly enable recording.
+        Video and audio streams are transmitted peer-to-peer using WebRTC with end-to-end encryption.
+        Chat messages are relayed through our servers using encrypted connections (TLS).
+        We do not store or record your video/audio calls unless you explicitly enable recording.
       </p>
 
       <h2>3. How We Use Your Information</h2>
@@ -48,7 +49,8 @@ const Privacy = () => {
       <h2>4. Data Security</h2>
       <p>We implement industry-standard security measures:</p>
       <ul>
-        <li>End-to-end encryption for peer-to-peer connections</li>
+        <li>End-to-end encryption for video and audio using WebRTC (DTLS-SRTP)</li>
+        <li>TLS encryption for chat messages and all server communications</li>
         <li>HTTPS/TLS for all data transmission</li>
         <li>Secure authentication via OAuth 2.0</li>
         <li>No permanent storage of video/audio content</li>

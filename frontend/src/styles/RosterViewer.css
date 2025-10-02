@@ -1,0 +1,227 @@
+/* Roster Viewer Styles */
+
+.roster-viewer {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.roster-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.stat-icon {
+  font-size: 2rem;
+}
+
+.stat-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.stat-label {
+  font-size: 0.875rem;
+  color: #7f8c8d;
+}
+
+.roster-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  gap: 1rem;
+}
+
+.toolbar-left {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.search-input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.filter-select {
+  padding: 0.75rem;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  font-size: 1rem;
+  min-width: 200px;
+}
+
+.toolbar-right {
+  display: flex;
+  gap: 1rem;
+}
+
+.sync-info {
+  padding: 0.75rem;
+  background: #e3f2fd;
+  border-radius: 6px;
+  color: #1976d2;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.roster-table-container {
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.roster-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.roster-table th {
+  text-align: left;
+  padding: 1rem;
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #2c3e50;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.roster-table td {
+  padding: 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.roster-table tr:hover {
+  background: #f8f9fa;
+}
+
+.participant-name {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #3498db;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.role-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.role-badge.student {
+  background: #e3f2fd;
+  color: #1976d2;
+}
+
+.role-badge.instructor {
+  background: #f3e5f5;
+  color: #7b1fa2;
+}
+
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-badge.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.inactive {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: transform 0.2s;
+}
+
+.action-button:hover {
+  transform: scale(1.2);
+}
+
+.no-results {
+  text-align: center;
+  padding: 3rem;
+  color: #7f8c8d;
+}
+
+.results-count {
+  padding: 1rem;
+  text-align: center;
+  color: #7f8c8d;
+  font-size: 0.875rem;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 4rem;
+}
+
+@media (max-width: 768px) {
+  .roster-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .roster-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .toolbar-left {
+    flex-direction: column;
+  }
+
+  .toolbar-right {
+    flex-direction: column;
+  }
+
+  .roster-table {
+    font-size: 0.875rem;
+  }
+
+  .roster-table th,
+  .roster-table td {
+    padding: 0.75rem 0.5rem;
+  }
+}

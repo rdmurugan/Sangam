@@ -1,0 +1,577 @@
+.solutions-page {
+  padding-top: 70px;
+}
+
+/* Hero Section */
+.solution-hero {
+  padding: 100px 20px;
+  text-align: center;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.solution-hero.education {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.solution-hero.healthcare {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+}
+
+.solution-hero.business {
+  background: linear-gradient(135deg, #2D5BFF 0%, #1E40C9 100%);
+}
+
+.solution-hero.government {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.solution-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>');
+  opacity: 0.3;
+}
+
+.solution-hero .hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.solution-hero h1 {
+  font-size: 56px;
+  font-weight: 800;
+  margin-bottom: 20px;
+  line-height: 1.2;
+}
+
+.solution-hero .hero-subtitle {
+  font-size: 22px;
+  opacity: 0.95;
+  margin-bottom: 35px;
+  line-height: 1.6;
+}
+
+.solution-hero .hero-cta {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.solution-hero .btn-primary-large,
+.solution-hero .btn-secondary-large {
+  padding: 16px 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.solution-hero .btn-primary-large {
+  background: white;
+  color: #667eea;
+}
+
+.solution-hero.healthcare .btn-primary-large {
+  color: #06b6d4;
+}
+
+.solution-hero .btn-primary-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.solution-hero .btn-secondary-large {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.solution-hero .btn-secondary-large:hover {
+  background: white;
+  color: #667eea;
+}
+
+.solution-hero.healthcare .btn-secondary-large:hover {
+  color: #06b6d4;
+}
+
+/* Benefits Section */
+.benefits-section {
+  padding: 80px 20px;
+  background: white;
+}
+
+.benefits-section h2 {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 50px;
+  color: #1F2937;
+}
+
+.benefits-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+}
+
+.benefit-card {
+  text-align: center;
+  padding: 30px;
+}
+
+.benefit-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+}
+
+.benefit-card h3 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 15px;
+}
+
+.benefit-card p {
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.6;
+}
+
+/* Features Detail Section */
+.features-detail {
+  padding: 80px 20px;
+  background: #F9FAFB;
+}
+
+.features-detail h2 {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 60px;
+  color: #1F2937;
+}
+
+.feature-row {
+  max-width: 1200px;
+  margin: 0 auto 80px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: center;
+}
+
+.feature-row.reverse {
+  direction: rtl;
+}
+
+.feature-row.reverse > * {
+  direction: ltr;
+}
+
+.feature-content h3 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 20px;
+}
+
+.feature-content p {
+  font-size: 18px;
+  color: #6B7280;
+  line-height: 1.8;
+  margin-bottom: 25px;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  padding: 10px 0 10px 30px;
+  position: relative;
+  color: #4B5563;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.feature-list li::before {
+  content: '✓';
+  position: absolute;
+  left: 0;
+  color: #2D5BFF;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.feature-visual {
+  height: 350px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visual-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 20px;
+  font-weight: 600;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.visual-placeholder.whiteboard {
+  background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);
+}
+
+.visual-placeholder.breakout {
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
+}
+
+.visual-placeholder.screen {
+  background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+}
+
+.visual-placeholder.polls {
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+}
+
+.visual-placeholder.waiting {
+  background: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+}
+
+.visual-placeholder.security {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.visual-placeholder.calendar {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+/* Use Cases Section */
+.use-cases {
+  padding: 80px 20px;
+  background: white;
+}
+
+.use-cases h2 {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 50px;
+  color: #1F2937;
+}
+
+.use-cases-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.use-case-card {
+  padding: 35px;
+  background: white;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+
+.use-case-card:hover {
+  border-color: #2D5BFF;
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(45, 91, 255, 0.15);
+}
+
+.use-case-card h3 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 15px;
+}
+
+.use-case-card p {
+  font-size: 16px;
+  color: #6B7280;
+  line-height: 1.6;
+}
+
+/* Compliance Section */
+.compliance-section {
+  padding: 80px 20px;
+  background: #F9FAFB;
+}
+
+.compliance-section h2 {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #1F2937;
+}
+
+.section-intro {
+  text-align: center;
+  font-size: 18px;
+  color: #6B7280;
+  max-width: 800px;
+  margin: 0 auto 50px auto;
+  line-height: 1.8;
+}
+
+.compliance-grid {
+  max-width: 1200px;
+  margin: 0 auto 40px auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 30px;
+}
+
+.compliance-card {
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  border: 2px solid #E5E7EB;
+  transition: all 0.3s ease;
+}
+
+.compliance-card:hover {
+  border-color: #06b6d4;
+  box-shadow: 0 5px 20px rgba(6, 182, 212, 0.1);
+}
+
+.compliance-card h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1F2937;
+  margin-bottom: 10px;
+}
+
+.compliance-card p {
+  font-size: 15px;
+  color: #6B7280;
+  line-height: 1.6;
+}
+
+.compliance-note {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 25px;
+  background: #FEF3C7;
+  border-left: 4px solid #F59E0B;
+  border-radius: 8px;
+}
+
+.compliance-note p {
+  font-size: 14px;
+  color: #92400E;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Pricing CTA Section */
+.pricing-cta {
+  padding: 80px 20px;
+  background: linear-gradient(135deg, #2D5BFF 0%, #1E40C9 100%);
+  color: white;
+  text-align: center;
+}
+
+.pricing-cta h2 {
+  font-size: 40px;
+  font-weight: 800;
+  margin-bottom: 15px;
+}
+
+.pricing-cta > p {
+  font-size: 18px;
+  opacity: 0.9;
+  margin-bottom: 35px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.cta-buttons .btn-primary-large,
+.cta-buttons .btn-secondary-large {
+  padding: 16px 40px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 18px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.cta-buttons .btn-primary-large {
+  background: white;
+  color: #2D5BFF;
+}
+
+.cta-buttons .btn-primary-large:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+.cta-buttons .btn-secondary-large {
+  background: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+.cta-buttons .btn-secondary-large:hover {
+  background: white;
+  color: #2D5BFF;
+}
+
+.cta-note {
+  font-size: 14px;
+  opacity: 0.8;
+  margin-top: 15px;
+}
+
+/* Testimonials Section */
+.testimonials-section {
+  padding: 80px 20px;
+  background: white;
+}
+
+.testimonials-section h2 {
+  text-align: center;
+  font-size: 40px;
+  font-weight: 700;
+  margin-bottom: 50px;
+  color: #1F2937;
+}
+
+.testimonials-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 30px;
+}
+
+.testimonial-card {
+  padding: 35px;
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 2px solid #E5E7EB;
+  transition: all 0.3s ease;
+}
+
+.testimonial-card:hover {
+  border-color: #2D5BFF;
+  box-shadow: 0 5px 20px rgba(45, 91, 255, 0.1);
+}
+
+.stars {
+  color: #F59E0B;
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.quote {
+  font-size: 16px;
+  color: #4B5563;
+  line-height: 1.8;
+  margin-bottom: 20px;
+  font-style: italic;
+}
+
+.author {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.author strong {
+  font-size: 16px;
+  color: #1F2937;
+  font-weight: 600;
+}
+
+.author span {
+  font-size: 14px;
+  color: #6B7280;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .solution-hero h1 {
+    font-size: 36px;
+  }
+
+  .solution-hero .hero-subtitle {
+    font-size: 18px;
+  }
+
+  .benefits-section h2,
+  .features-detail h2,
+  .use-cases h2,
+  .pricing-cta h2,
+  .testimonials-section h2,
+  .compliance-section h2 {
+    font-size: 32px;
+  }
+
+  .feature-row {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .feature-row.reverse {
+    direction: ltr;
+  }
+
+  .feature-content h3 {
+    font-size: 26px;
+  }
+
+  .feature-visual {
+    height: 250px;
+  }
+
+  .benefits-grid,
+  .use-cases-grid,
+  .compliance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .cta-buttons .btn-primary-large,
+  .cta-buttons .btn-secondary-large {
+    width: 100%;
+    max-width: 300px;
+  }
+}
